@@ -10,6 +10,7 @@ import {
 } from '../store/selectors';
 import { setSelectedWallet, removeWallet } from '../store/walletSlice';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
+import WalletBalance from './WalletBalance';
 import type { WalletData } from '../store/types';
 
 export default function WalletList() {
@@ -180,8 +181,11 @@ export default function WalletList() {
                         </div>
                         
                         <div className="wallet-item__balance">
-                          <span className="balance-amount">0.00</span>
-                          <span className="balance-currency">{currentNetwork?.nativeCurrency.symbol}</span>
+                          <WalletBalance 
+                            address={wallet.address}
+                            networkId={selectedNetwork}
+                            autoRefresh={false}
+                          />
                         </div>
                       </div>
                       
