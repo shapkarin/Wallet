@@ -1,15 +1,43 @@
-@import "tailwindcss";
+/* Global styles for TrustWallet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@theme {
+:root {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-secondary: #6b7280;
+  --color-background: #ffffff;
+  --color-background-dark: #111827;
+  --color-text: #111827;
+  --color-text-dark: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-border-dark: #374151;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+}
 
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
+  :root {
     color-scheme: dark;
+  }
+  
+  html,
+  body {
+    background-color: var(--color-background-dark);
+    color: var(--color-text-dark);
   }
 }
