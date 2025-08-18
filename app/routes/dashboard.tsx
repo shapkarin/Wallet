@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import { useAppSelector } from '../store/hooks';
 import { selectWallets, selectSeedPhrases, selectUnbackedUpSeedPhrases, selectWalletsBySeedPhrase } from '../store/selectors';
 import Layout from '../components/Layout';
+import MainLayout from '../components/MainLayout';
 import WalletList from '../components/WalletList';
 import BalanceDashboard from '../components/BalanceDashboard';
 
@@ -32,7 +33,7 @@ export default function Dashboard() {
   const backedUpSeeds = seedPhrases.filter(sp => sp.isBackedUp).length;
 
   return (
-    <Layout>
+    <MainLayout>
       <div className="dashboard-page">
         <div className="dashboard-header">
           <h1>Wallet Dashboard</h1>
@@ -192,6 +193,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </Layout>
+    </MainLayout>
   );
 }

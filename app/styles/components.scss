@@ -1591,6 +1591,438 @@
   }
 }
 
+// Main Layout styles
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+  
+  .layout-body {
+    display: flex;
+    flex: 1;
+    margin-top: 4rem; // Account for fixed navigation
+  }
+  
+  .layout-sidebar {
+    width: 280px;
+    background: white;
+    border-right: 1px solid #e5e7eb;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    
+    &.collapsed {
+      width: 60px;
+      
+      .sidebar-header h2 {
+        opacity: 0;
+      }
+      
+      .sidebar-toggle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+    
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+      
+      h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 1.25rem;
+        transition: opacity 0.3s ease-in-out;
+      }
+      
+      .sidebar-toggle {
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+          background-color: #e5e7eb;
+          color: #111827;
+        }
+      }
+    }
+    
+    .sidebar-content {
+      padding: 1rem;
+      height: calc(100vh - 8rem);
+      overflow-y: auto;
+    }
+  }
+  
+  .layout-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    &.full-width {
+      width: 100%;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 1rem;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+  }
+  
+  .layout-footer {
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 1rem;
+    margin-top: auto;
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+    
+    .footer-section {
+      p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+      
+      .footer-links {
+        display: flex;
+        gap: 1rem;
+        
+        @media (max-width: 768px) {
+          justify-content: center;
+        }
+        
+        .footer-link {
+          color: #6b7280;
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: color 0.2s ease-in-out;
+          
+          &:hover {
+            color: #3b82f6;
+          }
+        }
+      }
+      
+      .footer-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        .status-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          
+          &.online {
+            background-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+          }
+          
+          &.offline {
+            background-color: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+          }
+        }
+        
+        .status-text {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}
+
+// Sidebar content styles
+.sidebar-section {
+  margin-bottom: 2rem;
+  
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.sidebar-auth-message {
+  text-align: center;
+  padding: 2rem 1rem;
+  
+  .auth-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+  .quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-align: left;
+    
+    &:hover:not(:disabled) {
+      border-color: #3b82f6;
+      background-color: #f0f9ff;
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    &.create {
+      &:hover:not(:disabled) {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+      }
+    }
+    
+    &.import {
+      &:hover:not(:disabled) {
+        border-color: #f59e0b;
+        background-color: #fffbeb;
+      }
+    }
+    
+    &.derive {
+      &:hover:not(:disabled) {
+        border-color: #8b5cf6;
+        background-color: #faf5ff;
+      }
+    }
+    
+    .action-icon {
+      font-size: 1.25rem;
+    }
+    
+    .action-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #111827;
+    }
+  }
+}
+
+.wallet-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  
+  .stat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    
+    &.warning {
+      background-color: #fef3c7;
+      border-color: #fbbf24;
+      
+      .stat-value, .stat-label {
+        color: #92400e;
+      }
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+.recent-wallets {
+  .recent-wallet-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      border-color: #3b82f6;
+      background-color: #f0f9ff;
+    }
+    
+    .wallet-info {
+      .wallet-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #111827;
+        margin-bottom: 0.25rem;
+      }
+      
+      .wallet-address {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-family: monospace;
+      }
+    }
+    
+    .wallet-arrow {
+      color: #6b7280;
+      font-size: 1rem;
+    }
+  }
+  
+  .view-all-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+  }
+}
+
+.sidebar-nav {
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #6b7280;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+    
+    &.active {
+      background-color: #3b82f6;
+      color: white;
+      
+      &:hover {
+        background-color: #2563eb;
+      }
+    }
+    
+    .nav-icon {
+      font-size: 1rem;
+    }
+    
+    .nav-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .main-layout {
+    .layout-body {
+      flex-direction: column;
+    }
+    
+    .layout-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #e5e7eb;
+      
+      &.collapsed {
+        width: 100%;
+        height: auto;
+        
+        .sidebar-content {
+          height: auto;
+          padding: 0;
+        }
+        
+        .sidebar-header h2 {
+          opacity: 1;
+        }
+      }
+      
+      .sidebar-content {
+        height: auto;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    }
+    
+    .layout-main {
+      width: 100%;
+    }
+  }
+  
+  .wallet-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .mnemonic-display, .mnemonic-grid {
