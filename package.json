@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "build:extension": "vite build --mode extension",
     "dev": "react-router dev",
+    "dev:extension": "vite --mode extension",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -41,6 +43,7 @@
     "sass": "^1.90.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
+    "vite-plugin-static-copy": "^3.1.1",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }
