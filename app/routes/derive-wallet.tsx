@@ -37,6 +37,15 @@ export default function DeriveWallet() {
     } else if (seedPhrases.length > 0) {
       setSelectedSeedHash(seedPhrases[0].hash);
     }
+
+    const pathFromUrl = searchParams.get('path');
+    if (pathFromUrl) {
+      const decodedPath = decodeURIComponent(pathFromUrl);
+      setDerivationPath(decodedPath);
+      setCustomPath(decodedPath);
+      const isStandardPath = ["m/44'/60'/0'/0/0", "m/44'/60'/1'/0/0", "m/44'/60'/2'/0/0"].includes(decodedPath);
+      setUseCustomPath(!isStandardPath);
+    }
   }, [isAuthenticated, searchParams, seedPhrases, navigate]);
 
   const selectedSeed = seedPhrases.find(sp => sp.hash === selectedSeedHash);

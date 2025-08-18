@@ -4,6 +4,7 @@ import { useAppSelector } from '../store/hooks';
 import { selectWallets, selectSeedPhrases, selectSelectedChainId } from '../store/selectors';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
 import WalletBalance from '../components/WalletBalance';
+import DerivationPathHistory from '../components/DerivationPathHistory';
 import Layout from '../components/Layout';
 import type { Route } from "./+types/wallet.$id";
 import type { WalletData } from '../store/types';
@@ -161,6 +162,19 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
                     View on {currentNetwork?.name} Explorer
                   </a>
                 </div>
+              </div>
+
+              <div className="derivation-history-section">
+                <h2>Derivation Path History</h2>
+                <DerivationPathHistory
+                  seedPhraseHash={wallet.seedPhraseHash}
+                  onCreateWallet={(suggestedPath) => {
+                    navigate(`/derive-wallet?seed=${wallet.seedPhraseHash}&path=${encodeURIComponent(suggestedPath)}`);
+                  }}
+                  onViewWallet={(walletId) => {
+                    navigate(`/wallet/${walletId}`);
+                  }}
+                />
               </div>
             </div>
 
