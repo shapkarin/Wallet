@@ -13,5 +13,16 @@ export default defineConfig({
         additionalData: `@import "./app/styles/globals.scss";`
       }
     }
-  }
+  },
+  define: {
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer',
+    },
+  },
+  optimizeDeps: {
+    include: ['buffer'],
+  },
 });
