@@ -1,5 +1,158 @@
 // Component Styles for TrustWallet
 
+// Layout styles
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  padding-top: 4rem; // Account for fixed navigation
+}
+
+// Navigation styles
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 100;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  
+  &__brand {
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: #111827;
+      font-weight: 600;
+      
+      .brand-icon {
+        font-size: 1.5rem;
+      }
+      
+      .brand-text {
+        font-size: 1.25rem;
+      }
+    }
+  }
+  
+  &__menu {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+  }
+  
+  &--active {
+    background-color: #3b82f6;
+    color: white;
+    
+    &:hover {
+      background-color: #2563eb;
+      color: white;
+    }
+  }
+  
+  .nav-icon {
+    font-size: 1rem;
+  }
+  
+  .nav-text {
+    font-size: 0.875rem;
+  }
+}
+
+// Home page styles
+.home-page {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  text-align: center;
+  
+  h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #111827;
+  }
+  
+  > p {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin-bottom: 3rem;
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.feature-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+  }
+  
+  p {
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.cta-section {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  
+  .btn-cta {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
 // Button styles
 .btn {
   display: inline-flex;
