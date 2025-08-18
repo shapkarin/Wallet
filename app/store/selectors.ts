@@ -70,3 +70,39 @@ export const selectSelectedChainId = createSelector(
   [selectWalletState],
   (walletState) => walletState.selectedChainId
 );
+
+export const selectAuthState = (state: RootState) => state.auth;
+
+export const selectIsAuthenticated = createSelector(
+  [selectAuthState],
+  (authState) => authState.isAuthenticated
+);
+
+export const selectIsSetupComplete = createSelector(
+  [selectAuthState],
+  (authState) => authState.isSetupComplete
+);
+
+export const selectHasWallets = createSelector(
+  [selectAuthState],
+  (authState) => authState.hasWallets
+);
+
+export const selectAuthLoading = createSelector(
+  [selectAuthState],
+  (authState) => authState.isLoading
+);
+
+export const selectAuthError = createSelector(
+  [selectAuthState],
+  (authState) => authState.error
+);
+
+export const selectSessionInfo = createSelector(
+  [selectAuthState],
+  (authState) => ({
+    sessionStartTime: authState.sessionStartTime,
+    sessionTimeout: authState.sessionTimeout,
+    isActive: authState.isAuthenticated,
+  })
+);

@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import walletReducer from './walletSlice';
+import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
     wallet: walletReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
