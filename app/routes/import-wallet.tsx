@@ -80,7 +80,6 @@ export default function ImportWallet() {
         seedPhraseData.hash,
         walletName.trim(),
         chainId,
-        derivationPath
       );
 
       dispatch(addSeedPhrase(seedPhraseData));
