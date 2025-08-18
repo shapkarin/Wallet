@@ -7,7 +7,7 @@ import { storageService } from '../services/storage';
 import { selectIsAuthenticated } from '../store/selectors';
 
 interface WalletGeneratorProps {
-  onWalletGenerated?: (walletId: string) => void;
+  onWalletGenerated?: () => void;
 }
 
 export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorProps) {
@@ -59,7 +59,7 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       setShowMnemonic(true);
       
       if (onWalletGenerated) {
-        onWalletGenerated(walletData.id);
+        onWalletGenerated();
       }
 
     } catch (error) {

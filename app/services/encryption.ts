@@ -1,4 +1,4 @@
-import { hash, verify } from 'argon2-browser';
+import argon2 from 'argon2-browser';
 
 export interface EncryptionResult {
   encrypted: string;
@@ -31,7 +31,7 @@ export const encryptWithArgon2 = async (
   const salt = generateSalt();
   const saltBuffer = new TextEncoder().encode(salt);
   
-  const result = await hash({
+  const result = await argon2.hash({
     pass: password,
     salt: saltBuffer,
     ...ARGON2_CONFIG,
@@ -58,7 +58,7 @@ export const decryptWithArgon2 = async (
 ): Promise<string> => {
   const saltBuffer = new TextEncoder().encode(salt);
   
-  const result = await hash({
+  const result = await argon2.hash({
     pass: password,
     salt: saltBuffer,
     ...ARGON2_CONFIG,
@@ -82,7 +82,7 @@ export const hashPassword = async (password: string): Promise<PasswordHashResult
   const salt = generateSalt();
   const saltBuffer = new TextEncoder().encode(salt);
   
-  const result = await hash({
+  const result = await argon2.hash({
     pass: password,
     salt: saltBuffer,
     ...ARGON2_CONFIG,
@@ -104,7 +104,7 @@ export const verifyPassword = async (
   const saltBuffer = new TextEncoder().encode(salt);
   
   try {
-    const result = await hash({
+    const result = await argon2.hash({
       pass: password,
       salt: saltBuffer,
       ...ARGON2_CONFIG,
@@ -126,7 +126,7 @@ export const deriveKeyFromPassword = async (
 ): Promise<Uint8Array> => {
   const saltBuffer = new TextEncoder().encode(salt);
   
-  const result = await hash({
+  const result = await argon2.hash({
     pass: password,
     salt: saltBuffer,
     ...ARGON2_CONFIG,

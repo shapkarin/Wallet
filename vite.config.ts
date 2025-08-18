@@ -2,10 +2,14 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 const currentDir = __dirname;
 
 export default defineConfig(({ mode }) => ({
   plugins: [
+    wasm(),
+    topLevelAwait(),
     reactRouter(), 
     tsconfigPaths(),
     ...(mode === 'extension' ? [
@@ -40,6 +44,11 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     include: ['buffer'],
+    exclude: ['argon2-browser'],
+  },
+  worker: {
+    format: 'es',
+    plugins: () => [wasm(), topLevelAwait()],
   },
   build: {
     ...(mode === 'extension' ? {
