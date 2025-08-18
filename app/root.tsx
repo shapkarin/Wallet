@@ -7,8 +7,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 import type { ReactNode } from "react";
+import { Provider } from "react-redux";
 
 import type { Route } from "./+types/root";
+import { store } from "./store";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -43,7 +45,11 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Provider store={store}>
+      <Outlet />
+    </Provider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
