@@ -15,6 +15,7 @@ export interface DerivedWallet {
   derivationPath: string;
 }
 
+// TODO: make it dynamic
 export const SUPPORTED_NETWORKS: NetworkConfig[] = [
   {
     chainId: 1,

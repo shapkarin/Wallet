@@ -1,10 +1,10 @@
 import type { Route } from "./+types/wallet.$id.mnemonic";
+import MnemonicReveal from '../components/MnemonicReveal';
 
-export default function MnemonicReveal({ params }: Route.ComponentProps) {
+export default function MnemonicRevealPage({ params }: Route.ComponentProps) {
   return (
     <div>
-      <h1>Mnemonic Phrase Reveal</h1>
-      <p>Reveal mnemonic phrase for wallet: {params.id}</p>
+      <MnemonicReveal walletId={params.id} />
     </div>
   );
 }

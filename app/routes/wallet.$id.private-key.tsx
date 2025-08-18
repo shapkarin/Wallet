@@ -1,10 +1,10 @@
 import type { Route } from "./+types/wallet.$id.private-key";
+import PrivateKeyReveal from '../components/PrivateKeyReveal';
 
-export default function PrivateKeyReveal({ params }: Route.ComponentProps) {
+export default function PrivateKeyRevealPage({ params }: Route.ComponentProps) {
   return (
     <div>
-      <h1>Private Key Reveal</h1>
-      <p>Reveal private key for wallet: {params.id}</p>
+      <PrivateKeyReveal walletId={params.id} />
     </div>
   );
 }
