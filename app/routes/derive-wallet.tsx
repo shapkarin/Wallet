@@ -6,6 +6,7 @@ import { selectSeedPhrases, selectWallets, selectIsAuthenticated } from '../stor
 import { deriveWalletFromMnemonic, createWalletData, SUPPORTED_NETWORKS } from '../services/wallet';
 import { storageService } from '../services/storage';
 import Layout from '../components/Layout';
+import DerivationPathInput from '../components/DerivationPathInput';
 
 export default function DeriveWallet() {
   const [selectedSeedHash, setSelectedSeedHash] = useState('');
@@ -211,65 +212,20 @@ export default function DeriveWallet() {
               />
             </div>
 
-            <div className="form-group">
-              <label>Derivation Path</label>
-              <div className="path-selection">
-                <div className="path-presets">
-                  <button
-                    type="button"
-                    onClick={() => handlePathPresetChange('next')}
-                    className={`path-preset ${!useCustomPath && derivationPath === generateNextPath() ? 'active' : ''}`}
-                    disabled={isGenerating}
-                  >
-                    Next Available ({generateNextPath()})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handlePathPresetChange("m/44'/60'/0'/0/0")}
-                    className={`path-preset ${!useCustomPath && derivationPath === "m/44'/60'/0'/0/0" ? 'active' : ''}`}
-                    disabled={isGenerating}
-                  >
-                    Account 0
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handlePathPresetChange("m/44'/60'/1'/0/0")}
-                    className={`path-preset ${!useCustomPath && derivationPath === "m/44'/60'/1'/0/0" ? 'active' : ''}`}
-                    disabled={isGenerating}
-                  >
-                    Account 1
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUseCustomPath(true)}
-                    className={`path-preset ${useCustomPath ? 'active' : ''}`}
-                    disabled={isGenerating}
-                  >
-                    Custom
-                  </button>
-                </div>
-
-                {useCustomPath ? (
-                  <input
-                    type="text"
-                    value={customPath}
-                    onChange={(e) => setCustomPath(e.target.value)}
-                    placeholder="m/44'/60'/0'/0/0"
-                    disabled={isGenerating}
-                    className="custom-path-input"
-                  />
-                ) : (
-                  <div className="selected-path">
-                    Selected path: <code>{derivationPath}</code>
-                  </div>
-                )}
-              </div>
-              <div className="help-text">
-                BIP-44 derivation path format: m/44'/60'/account'/change/index
-                <br />
-                Most wallets use account numbers starting from 0.
-              </div>
-            </div>
+            <DerivationPathInput
+              value={useCustomPath ? customPath : derivationPath}
+              onChange={(path) => {
+                setDerivationPath(path);
+                setCustomPath(path);
+                setUseCustomPath(!["m/44'/60'/0'/0/0", "m/44'/60'/1'/0/0", "m/44'/60'/2'/0/0", generateNextPath()].includes(path));
+              }}
+              usedPaths={usedPaths}
+              disabled={isGenerating}
+              onPresetSelect={(preset) => {
+                setDerivationPath(preset);
+                setUseCustomPath(false);
+              }}
+            />
 
             <div className="form-group">
               <label htmlFor="chainId">Network</label>
@@ -287,22 +243,6 @@ export default function DeriveWallet() {
               </select>
             </div>
 
-            <div className="path-validation">
-              {useCustomPath && customPath && (
-                <div className={`validation-message ${validateDerivationPath(customPath) ? 'valid' : 'invalid'}`}>
-                  {validateDerivationPath(customPath) 
-                    ? '✅ Valid derivation path' 
-                    : '❌ Invalid derivation path format'
-                  }
-                </div>
-              )}
-              {(useCustomPath ? customPath : derivationPath) && usedPaths.includes(useCustomPath ? customPath : derivationPath) && (
-                <div className="validation-message invalid">
-                  ❌ This derivation path is already in use
-                </div>
-              )}
-            </div>
-
             <div className="form-actions">
               <button
                 type="submit"
@@ -311,7 +251,7 @@ export default function DeriveWallet() {
                   isGenerating || 
                   !walletName.trim() || 
                   !selectedSeedHash ||
-                  (useCustomPath && !validateDerivationPath(customPath)) ||
+                  !validateDerivationPath(useCustomPath ? customPath : derivationPath) ||
                   usedPaths.includes(useCustomPath ? customPath : derivationPath)
                 }
               >
