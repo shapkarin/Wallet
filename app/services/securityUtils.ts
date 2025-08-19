@@ -47,14 +47,8 @@ export const clearRateLimit = (identifier: string): void => {
   rateLimitStore.delete(identifier);
 };
 
-export const isSecureContext = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  return window.isSecureContext;
-};
-
 export const hasWebCryptoAPI = (): boolean => {
-  return typeof window !== 'undefined' && 
-         typeof window.crypto !== 'undefined' && 
+  return typeof window.crypto !== 'undefined' && 
          typeof window.crypto.subtle !== 'undefined';
 };
 
@@ -80,6 +74,7 @@ export const validateSecurityRequirements = (): { isValid: boolean; errors: stri
   };
 };
 
+// TODO: redundant
 export const generateSecureToken = (length = 32): string => {
   if (!hasCryptoRandomValues()) {
     throw new Error('Secure random number generation not available');
@@ -88,22 +83,4 @@ export const generateSecureToken = (length = 32): string => {
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-};
-
-export const constantTimeCompare = (a: string, b: string): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  
-  return result === 0;
-};
-
-export const zeroizeString = (str: string): void => {
-  if (typeof str !== 'string') return;
-  str = '';
 };
