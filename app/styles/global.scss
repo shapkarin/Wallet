@@ -84,3 +84,151 @@ $breakpoint-xl: 1280px;
     color: $text-dark;
   }
 }
+
+// Error Boundary Styles
+.error-boundary {
+  @include flex-center;
+  min-height: 400px;
+  padding: $spacing-xl;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: $radius-lg;
+  margin: $spacing-lg;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1f1412;
+    border-color: #451a03;
+  }
+}
+
+.error-boundary-content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.error-boundary-title {
+  color: $error;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+}
+
+.error-boundary-message {
+  color: #991b1b;
+  margin-bottom: $spacing-lg;
+  line-height: 1.6;
+
+  @media (prefers-color-scheme: dark) {
+    color: #fca5a5;
+  }
+}
+
+.error-boundary-details {
+  text-align: left;
+  margin: $spacing-lg 0;
+  
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: $secondary;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.error-boundary-stack {
+  background-color: #f9fafb;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-top: $spacing-sm;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1f2937;
+    border-color: $border-dark;
+  }
+
+  h4 {
+    margin: $spacing-md 0 $spacing-sm 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $secondary;
+  }
+
+  pre {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: center;
+  margin-top: $spacing-lg;
+}
+
+.wallet-error-boundary,
+.crypto-error-boundary {
+  @include flex-center;
+  min-height: 300px;
+  padding: $spacing-lg;
+  background-color: #fefce8;
+  border: 1px solid #fde047;
+  border-radius: $radius-lg;
+  margin: $spacing-md;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1c1917;
+    border-color: #a16207;
+  }
+}
+
+.wallet-error-content,
+.crypto-error-content {
+  text-align: center;
+  max-width: 500px;
+
+  h3 {
+    color: $warning;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    color: #92400e;
+    margin-bottom: $spacing-md;
+    line-height: 1.6;
+
+    @media (prefers-color-scheme: dark) {
+      color: #fbbf24;
+    }
+  }
+
+  ul {
+    text-align: left;
+    color: #92400e;
+    margin: $spacing-md 0;
+    padding-left: $spacing-lg;
+
+    @media (prefers-color-scheme: dark) {
+      color: #fbbf24;
+    }
+  }
+}
+
+.crypto-error-warning {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-top: $spacing-lg;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #451a03;
+    border-color: #92400e;
+  }
+}

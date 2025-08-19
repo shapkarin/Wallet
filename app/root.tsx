@@ -11,6 +11,8 @@ import { Provider } from "react-redux";
 
 import type { Route } from "./+types/root";
 import { store } from "./store";
+import GlobalErrorBoundary from "./components/ErrorBoundary";
+import { errorLogger } from "./services/errorLogger";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -47,7 +49,13 @@ export function Layout({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <Provider store={store}>
-      <Outlet />
+      <GlobalErrorBoundary
+        onError={(error, _errorInfo) => {
+          errorLogger.logError(error, 'Global App Error');
+        }}
+      >
+        <Outlet />
+      </GlobalErrorBoundary>
     </Provider>
   );
 }
