@@ -16,4 +16,5 @@ export default [
   route("wallet/:id/private-key", "routes/wallet.$id.private-key.tsx"),
   route("wallet/:id/mnemonic", "routes/wallet.$id.mnemonic.tsx"),
   route("settings", "routes/settings.tsx"),
+  route("*", "routes/$.tsx"),
 ] satisfies RouteConfig;
