@@ -13,6 +13,8 @@ export interface SeedPhraseData {
   hash: string;
   encryptedSeed: string;
   salt: string;
+  iv: string;
+  authTag: string;
   isBackedUp: boolean;
   createdAt: number;
   walletIds: string[];

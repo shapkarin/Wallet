@@ -50,7 +50,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <GlobalErrorBoundary
-        onError={(error, _errorInfo) => {
+        onError={(error) => {
           errorLogger.logError(error, 'Global App Error');
         }}
       >

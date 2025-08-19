@@ -328,25 +328,7 @@ export class ValidationService {
     };
   }
 
-  static sanitizeInput(input: string, options: { 
-    maxLength?: number; 
-    allowedChars?: RegExp; 
-    trim?: boolean;
-  } = {}): string {
-    const { maxLength, allowedChars, trim = true } = options;
 
-    let sanitized = trim ? input.trim() : input;
-
-    if (allowedChars) {
-      sanitized = sanitized.replace(new RegExp(`[^${allowedChars.source}]`, 'g'), '');
-    }
-
-    if (maxLength && sanitized.length > maxLength) {
-      sanitized = sanitized.substring(0, maxLength);
-    }
-
-    return sanitized;
-  }
 }
 
 export const validationService = ValidationService;

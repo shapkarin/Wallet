@@ -1,4 +1,4 @@
-import { generateSalt, ARGON2_CONFIG } from './encryption';
+import { generateSalt, ARGON2_CONFIG } from './encryptionImproved';
 
 export interface SecurityAuditResult {
   passed: boolean;

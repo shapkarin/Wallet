@@ -1,4 +1,5 @@
 import argon2 from 'argon2-browser';
+import { securityUtils } from './securityUtils';
 
 export interface EncryptionResult {
   encrypted: string;
@@ -38,19 +39,6 @@ export const generateIV = (): string => {
   const array = new Uint8Array(12); // 96-bit IV for AES-GCM
   crypto.getRandomValues(array);
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-};
-
-const constantTimeCompare = (a: string, b: string): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  
-  return result === 0;
 };
 
 const zeroizeArray = (array: Uint8Array): void => {
@@ -299,7 +287,7 @@ export const verifyPassword = async (
     ).join('');
 
     // Use constant-time comparison to prevent timing attacks
-    const isValid = constantTimeCompare(computedHash, storedHash);
+    const isValid = securityUtils.constantTimeCompare(computedHash, storedHash);
 
     // Zeroize sensitive data
     zeroizeArray(new Uint8Array(result.hash));

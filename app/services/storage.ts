@@ -1,4 +1,4 @@
-import { encryptWithArgon2, decryptWithArgon2, hashPassword, verifyPassword } from './encryption';
+import { encryptWithAESGCM, decryptWithAESGCM, hashPassword, verifyPassword } from './encryptionImproved';
 import type { WalletData, SeedPhraseData } from '../store/types';
 
 export interface StorageData {
@@ -71,7 +71,7 @@ class LocalStorageService implements SecureStorageService {
       lastUpdated: Date.now(),
     };
 
-    const encrypted = await encryptWithArgon2(JSON.stringify(initialData), password);
+    const encrypted = await encryptWithAESGCM(JSON.stringify(initialData), password);
     localStorage.setItem(STORAGE_KEYS.WALLET_DATA, JSON.stringify(encrypted));
   }
 
@@ -114,13 +114,15 @@ class LocalStorageService implements SecureStorageService {
   }
 
   async saveEncryptedSeedPhrase(seedPhrase: string, password: string): Promise<SeedPhraseData> {
-    const encrypted = await encryptWithArgon2(seedPhrase, password);
+    const encrypted = await encryptWithAESGCM(seedPhrase, password);
     const hash = await this.generateSeedPhraseHash(seedPhrase);
     
     const seedPhraseData: SeedPhraseData = {
       hash,
       encryptedSeed: encrypted.encrypted,
       salt: encrypted.salt,
+      iv: encrypted.iv,
+      authTag: encrypted.authTag,
       isBackedUp: false,
       createdAt: Date.now(),
       walletIds: [],
@@ -140,10 +142,12 @@ class LocalStorageService implements SecureStorageService {
   }
 
   async decryptSeedPhrase(seedPhraseData: SeedPhraseData, password: string): Promise<string> {
-    return await decryptWithArgon2(
+    return await decryptWithAESGCM(
       seedPhraseData.encryptedSeed,
       password,
-      seedPhraseData.salt
+      seedPhraseData.salt,
+      seedPhraseData.iv,
+      seedPhraseData.authTag
     );
   }
 
@@ -183,10 +187,12 @@ class LocalStorageService implements SecureStorageService {
       }
 
       const encryptedData = JSON.parse(encryptedStr);
-      const decryptedStr = await decryptWithArgon2(
+      const decryptedStr = await decryptWithAESGCM(
         encryptedData.encrypted,
         password,
-        encryptedData.salt
+        encryptedData.salt,
+        encryptedData.iv,
+        encryptedData.authTag
       );
       
       const data: StorageData = JSON.parse(decryptedStr);
@@ -203,7 +209,7 @@ class LocalStorageService implements SecureStorageService {
 
   private async saveStorageData(data: StorageData, password: string): Promise<void> {
     try {
-      const encrypted = await encryptWithArgon2(JSON.stringify(data), password);
+      const encrypted = await encryptWithAESGCM(JSON.stringify(data), password);
       localStorage.setItem(STORAGE_KEYS.WALLET_DATA, JSON.stringify(encrypted));
     } catch (error) {
       throw new Error('Failed to save wallet data: ' + (error as Error).message);
