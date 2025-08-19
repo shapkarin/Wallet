@@ -96,8 +96,8 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
                 <h2>Balance</h2>
                 <WalletBalance 
                   address={wallet.address} 
-                  chainId={wallet.chainId}
-                  showRefresh={true}
+                  networkId={wallet.chainId}
+                  autoRefresh={true}
                 />
               </div>
 

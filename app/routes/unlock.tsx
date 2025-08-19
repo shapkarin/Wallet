@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { authenticate, setLoading, setError, refreshSession } from '../store/authSlice';
-import { selectAuthLoading, selectAuthError, selectIsAuthenticated, selectIsSetupComplete } from '../store/selectors';
+import { unlock, lock, setLoading, setError, refreshSession } from '../store/authSlice';
+import { selectAuthLoading, selectAuthError, selectIsUnlocked, selectIsSetupComplete } from '../store/selectors';
 import { storageService } from '../services/storage';
 import Layout from '../components/Layout';
 
@@ -15,16 +15,16 @@ export default function Unlock() {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectAuthLoading);
   const error = useAppSelector(selectAuthError);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isUnlocked = useAppSelector(selectIsUnlocked);
   const isSetupComplete = useAppSelector(selectIsSetupComplete);
 
   useEffect(() => {
     if (!isSetupComplete) {
       navigate('/onboarding');
-    } else if (isAuthenticated) {
+    } else if (isUnlocked) {
       navigate('/dashboard');
     }
-  }, [isSetupComplete, isAuthenticated, navigate]);
+  }, [isSetupComplete, isUnlocked, navigate]);
 
   useEffect(() => {
     const checkExistingSession = () => {
@@ -34,7 +34,7 @@ export default function Unlock() {
           const sessionData = JSON.parse(savedSession);
           const now = Date.now();
           if (now - sessionData.timestamp < 24 * 60 * 60 * 1000) {
-            dispatch(authenticate());
+            dispatch(unlock());
             navigate('/dashboard');
           } else {
             localStorage.removeItem('trustwallet_session');
@@ -63,7 +63,10 @@ export default function Unlock() {
       const isValid = await storageService.verifyPassword(password);
       
       if (isValid) {
-        dispatch(authenticate());
+        const { passwordManager } = await import('../services/passwordManager');
+        passwordManager.setCurrentPassword(password);
+        
+        dispatch(unlock());
         
         if (rememberSession) {
           const sessionData = {
@@ -88,20 +91,50 @@ export default function Unlock() {
 
   const handleForgotPassword = () => {
     const confirmed = confirm(
-      'If you forgot your password, you will need to reset the application and lose all your wallets. ' +
-      'Make sure you have your seed phrases backed up before proceeding. Do you want to continue?'
+      '⚠️ WARNING: Password Recovery Impossible\n\n' +
+      'TrustWallet cannot recover your password. If you proceed:\n' +
+      '• ALL your encrypted wallet data will be permanently deleted\n' +
+      '• You will lose access to ALL wallets unless you have your seed phrases\n' +
+      '• This action cannot be undone\n\n' +
+      'Only proceed if you have your seed phrases backed up safely.\n\n' +
+      'Do you want to delete your account and start over?'
     );
 
-    if (confirmed) {
-      const doubleConfirm = confirm(
-        'This will permanently delete all your encrypted wallet data. ' +
-        'This action cannot be undone. Are you absolutely sure?'
-      );
+    if (!confirmed) return;
 
-      if (doubleConfirm) {
-        storageService.clearAllData();
-        navigate('/onboarding');
-      }
+    const doubleConfirm = confirm(
+      '🚨 FINAL WARNING 🚨\n\n' +
+      'You are about to permanently delete ALL wallet data.\n\n' +
+      'Without your seed phrase backups, you will lose access to your cryptocurrency forever.\n\n' +
+      'Are you absolutely certain you want to proceed?'
+    );
+
+    if (!doubleConfirm) return;
+
+    const confirmation = prompt(
+      'To confirm account deletion, type exactly: DELETE MY ACCOUNT\n\n' +
+      '(This will reset the entire application)'
+    );
+    
+    if (confirmation !== 'DELETE MY ACCOUNT') {
+      alert('Account deletion cancelled. The text must match exactly.');
+      return;
+    }
+
+    try {
+      storageService.resetApplication();
+      
+      // Also clear password manager state
+      import('../services/passwordManager').then(({ passwordManager }) => {
+        passwordManager.clearCurrentPassword();
+      });
+      
+      dispatch(lock());
+      
+      // Force reload to reset all application state
+      window.location.href = '/onboarding';
+    } catch (error) {
+      alert('Failed to reset application: ' + (error as Error).message);
     }
   };
 

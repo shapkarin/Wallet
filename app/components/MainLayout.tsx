@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppSelector } from '../store/hooks';
-import { selectWallets, selectSeedPhrases, selectUnbackedUpSeedPhrases, selectIsAuthenticated } from '../store/selectors';
+import { selectWallets, selectSeedPhrases, selectUnbackedUpSeedPhrases, selectIsUnlocked } from '../store/selectors';
 import Navigation from './Navigation';
 
 interface MainLayoutProps {
@@ -18,7 +18,7 @@ export default function MainLayout({ children, showSidebar = true, sidebarConten
   const wallets = useAppSelector(selectWallets);
   const seedPhrases = useAppSelector(selectSeedPhrases);
   const unbackedUpSeeds = useAppSelector(selectUnbackedUpSeedPhrases);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isUnlocked = useAppSelector(selectIsUnlocked);
 
   const isActivePath = (path: string) => location.pathname === path;
 
@@ -43,15 +43,7 @@ export default function MainLayout({ children, showSidebar = true, sidebarConten
       return sidebarContent;
     }
 
-    if (!isAuthenticated) {
-      return (
-        <div className="sidebar-auth-message">
-          <div className="auth-icon">🔒</div>
-          <h3>Authentication Required</h3>
-          <p>Please unlock your wallet to access features</p>
-        </div>
-      );
-    }
+
 
     return (
       <>

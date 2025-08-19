@@ -12,8 +12,10 @@ import { Provider } from "react-redux";
 import type { Route } from "./+types/root";
 import { store } from "./store";
 import GlobalErrorBoundary from "./components/ErrorBoundary";
+import PasswordProvider from "./components/PasswordProvider";
+import AppInitializer from "./components/AppInitializer";
 import { errorLogger } from "./services/errorLogger";
-import "./app.css";
+import "./app.scss";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -54,7 +56,11 @@ export default function App() {
           errorLogger.logError(error, 'Global App Error');
         }}
       >
-        <Outlet />
+        <AppInitializer>
+          <PasswordProvider>
+            <Outlet />
+          </PasswordProvider>
+        </AppInitializer>
       </GlobalErrorBoundary>
     </Provider>
   );

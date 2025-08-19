@@ -1,21 +1,21 @@
 import { Link, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import { useAppSelector } from '../store/hooks';
-import { selectIsSetupComplete, selectHasWallets } from '../store/selectors';
+import { selectIsSetupComplete, selectWallets } from '../store/selectors';
 import Layout from '../components/Layout';
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const isSetupComplete = useAppSelector(selectIsSetupComplete);
-  const hasWallets = useAppSelector(selectHasWallets);
+  const wallets = useAppSelector(selectWallets);
 
   useEffect(() => {
-    if (isSetupComplete && hasWallets) {
+    if (isSetupComplete && wallets.length > 0) {
       navigate('/dashboard');
     } else if (isSetupComplete) {
       navigate('/create-wallet');
     }
-  }, [isSetupComplete, hasWallets, navigate]);
+  }, [isSetupComplete, wallets.length, navigate]);
 
   return (
     <Layout>
@@ -60,8 +60,8 @@ export default function Onboarding() {
           </div>
 
           <div className="onboarding-actions">
-            <Link to="/setup" className="btn btn-primary btn-large">
-              Get Started
+            <Link to="/create-wallet" className="btn btn-primary btn-large">
+              Create New Wallet
             </Link>
             <Link to="/import-wallet" className="btn btn-secondary">
               Import Existing Wallet

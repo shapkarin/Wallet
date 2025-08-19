@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSessionTimeout, logout } from '../store/authSlice';
+import { setSessionTimeout, lock } from '../store/authSlice';
 import { setSelectedChain } from '../store/walletSlice';
-import { selectSessionInfo, selectIsAuthenticated } from '../store/selectors';
+import { selectSessionInfo, selectIsUnlocked } from '../store/selectors';
 import { selectSelectedChainId, selectWallets, selectSeedPhrases } from '../store/selectors';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
 import { storageService } from '../services/storage';
@@ -19,16 +19,12 @@ export default function Settings() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const sessionInfo = useAppSelector(selectSessionInfo);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isUnlocked = useAppSelector(selectIsUnlocked);
   const selectedChainId = useAppSelector(selectSelectedChainId);
   const wallets = useAppSelector(selectWallets);
   const seedPhrases = useAppSelector(selectSeedPhrases);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/unlock');
-    }
-  }, [isAuthenticated, navigate]);
+
 
   useEffect(() => {
     if (sessionInfo.sessionTimeout) {
@@ -57,7 +53,8 @@ export default function Settings() {
 
     setIsExporting(true);
     try {
-      const password = 'temp_password';
+      const { passwordManager } = await import('../services/passwordManager');
+      const password = await passwordManager.requestPassword();
       const exportedData = await storageService.exportData(password);
       
       const blob = new Blob([exportedData], { type: 'application/json' });
@@ -102,7 +99,7 @@ export default function Settings() {
     setIsClearing(true);
     try {
       storageService.clearAllData();
-      dispatch(logout());
+      dispatch(lock());
       navigate('/onboarding');
     } catch (error) {
       alert('Failed to clear data: ' + (error as Error).message);
@@ -111,8 +108,10 @@ export default function Settings() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLock = async () => {
+    const { passwordManager } = await import('../services/passwordManager');
+    passwordManager.clearCurrentPassword();
+    dispatch(lock());
     navigate('/unlock');
   };
 
@@ -277,7 +276,7 @@ export default function Settings() {
                 </div>
                 <div className="setting-control">
                   <button
-                    onClick={handleLogout}
+                    onClick={handleLock}
                     className="btn btn-secondary"
                   >
                     Lock Wallet

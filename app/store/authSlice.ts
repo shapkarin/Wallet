@@ -2,23 +2,35 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export interface AuthState {
-  isAuthenticated: boolean;
+  isUnlocked: boolean;
   sessionStartTime: number | null;
   sessionTimeout: number;
   isSetupComplete: boolean;
-  hasWallets: boolean;
   isLoading: boolean;
   error: string | null;
+  passwordPrompt: {
+    isVisible: boolean;
+    title: string;
+    message: string;
+    resolve: ((_password: string) => void) | null;
+    reject: ((_error: Error) => void) | null;
+  };
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  isUnlocked: false,
   sessionStartTime: null,
   sessionTimeout: 30 * 60 * 1000,
   isSetupComplete: false,
-  hasWallets: false,
   isLoading: false,
   error: null,
+  passwordPrompt: {
+    isVisible: false,
+    title: 'Authentication Required',
+    message: 'Please enter your password to continue',
+    resolve: null,
+    reject: null,
+  },
 };
 
 const authSlice = createSlice({
@@ -31,38 +43,86 @@ const authSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-    authenticate: (state) => {
-      state.isAuthenticated = true;
+    unlock: (state) => {
+      state.isUnlocked = true;
       state.sessionStartTime = Date.now();
       state.error = null;
     },
-    logout: (state) => {
-      state.isAuthenticated = false;
+    lock: (state) => {
+      state.isUnlocked = false;
       state.sessionStartTime = null;
       state.error = null;
     },
     setSetupComplete: (state, action: PayloadAction<boolean>) => {
       state.isSetupComplete = action.payload;
     },
-    setHasWallets: (state, action: PayloadAction<boolean>) => {
-      state.hasWallets = action.payload;
+    initializeAuth: (state, action: PayloadAction<{ isSetupComplete: boolean }>) => {
+      state.isSetupComplete = action.payload.isSetupComplete;
     },
+
     setSessionTimeout: (state, action: PayloadAction<number>) => {
       state.sessionTimeout = action.payload;
     },
     checkSessionExpiry: (state) => {
-      if (state.isAuthenticated && state.sessionStartTime) {
+      if (state.isUnlocked && state.sessionStartTime) {
         const now = Date.now();
         if (now - state.sessionStartTime > state.sessionTimeout) {
-          state.isAuthenticated = false;
+          state.isUnlocked = false;
           state.sessionStartTime = null;
         }
       }
     },
     refreshSession: (state) => {
-      if (state.isAuthenticated) {
+      if (state.isUnlocked) {
         state.sessionStartTime = Date.now();
       }
+    },
+    showPasswordPrompt: (state, action: PayloadAction<{
+      title?: string;
+      message?: string;
+      resolve: (_password: string) => void;
+      reject: (_error: Error) => void;
+    }>) => {
+      state.passwordPrompt = {
+        isVisible: true,
+        title: action.payload.title || 'Authentication Required',
+        message: action.payload.message || 'Please enter your password to continue',
+        resolve: action.payload.resolve,
+        reject: action.payload.reject,
+      };
+    },
+    hidePasswordPrompt: (state) => {
+      state.passwordPrompt = {
+        isVisible: false,
+        title: 'Authentication Required',
+        message: 'Please enter your password to continue',
+        resolve: null,
+        reject: null,
+      };
+    },
+    resolvePasswordPrompt: (state, action: PayloadAction<string>) => {
+      if (state.passwordPrompt.resolve) {
+        state.passwordPrompt.resolve(action.payload);
+      }
+      state.passwordPrompt = {
+        isVisible: false,
+        title: 'Authentication Required',
+        message: 'Please enter your password to continue',
+        resolve: null,
+        reject: null,
+      };
+    },
+    rejectPasswordPrompt: (state, action: PayloadAction<string>) => {
+      if (state.passwordPrompt.reject) {
+        state.passwordPrompt.reject(new Error(action.payload));
+      }
+      state.passwordPrompt = {
+        isVisible: false,
+        title: 'Authentication Required',
+        message: 'Please enter your password to continue',
+        resolve: null,
+        reject: null,
+      };
     },
   },
 });
@@ -70,13 +130,17 @@ const authSlice = createSlice({
 export const {
   setLoading,
   setError,
-  authenticate,
-  logout,
+  unlock,
+  lock,
   setSetupComplete,
-  setHasWallets,
+  initializeAuth,
   setSessionTimeout,
   checkSessionExpiry,
   refreshSession,
+  showPasswordPrompt,
+  hidePasswordPrompt,
+  resolvePasswordPrompt,
+  rejectPasswordPrompt,
 } = authSlice.actions;
 
 export default authSlice.reducer;

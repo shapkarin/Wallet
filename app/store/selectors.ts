@@ -73,9 +73,9 @@ export const selectSelectedChainId = createSelector(
 
 export const selectAuthState = (state: RootState) => state.auth;
 
-export const selectIsAuthenticated = createSelector(
+export const selectIsUnlocked = createSelector(
   [selectAuthState],
-  (authState) => authState.isAuthenticated
+  (authState) => authState.isUnlocked
 );
 
 export const selectIsSetupComplete = createSelector(
@@ -83,10 +83,7 @@ export const selectIsSetupComplete = createSelector(
   (authState) => authState.isSetupComplete
 );
 
-export const selectHasWallets = createSelector(
-  [selectAuthState],
-  (authState) => authState.hasWallets
-);
+
 
 export const selectAuthLoading = createSelector(
   [selectAuthState],
@@ -103,6 +100,11 @@ export const selectSessionInfo = createSelector(
   (authState) => ({
     sessionStartTime: authState.sessionStartTime,
     sessionTimeout: authState.sessionTimeout,
-    isActive: authState.isAuthenticated,
+    isActive: authState.isUnlocked,
   })
+);
+
+export const selectPasswordPrompt = createSelector(
+  [selectAuthState],
+  (authState) => authState.passwordPrompt
 );

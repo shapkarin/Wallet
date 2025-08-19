@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppSelector } from '../store/hooks';
-import { selectIsAuthenticated } from '../store/selectors';
+
 import SeedPhraseSelector from '../components/SeedPhraseSelector';
 import Layout from '../components/Layout';
 
@@ -9,19 +9,14 @@ export default function PathSelection() {
   const [selectedSeedHash, setSelectedSeedHash] = useState('');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/unlock');
-      return;
-    }
-
     const seedFromUrl = searchParams.get('seed');
     if (seedFromUrl) {
       setSelectedSeedHash(seedFromUrl);
     }
-  }, [isAuthenticated, searchParams, navigate]);
+  }, [searchParams, navigate]);
 
   const handleSeedSelect = (seedHash: string) => {
     setSelectedSeedHash(seedHash);

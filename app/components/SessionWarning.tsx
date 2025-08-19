@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '../store/hooks';
-import { refreshSession, logout } from '../store/authSlice';
-import { sessionManager } from '../services/sessionManager';
+import { refreshSession, lock } from '../store/authSlice';
+import { extendSession, lockWallet } from '../services/sessionManager';
 
 interface SessionWarningProps {
   isVisible: boolean;
@@ -47,13 +47,13 @@ export default function SessionWarning({
 
   const handleExtendSession = () => {
     dispatch(refreshSession());
-    sessionManager.extendSession();
+    extendSession();
     onExtend();
   };
 
   const handleLogoutNow = () => {
-    dispatch(logout());
-    sessionManager.clearSession();
+    dispatch(lock());
+    lockWallet();
     onLogout();
   };
 

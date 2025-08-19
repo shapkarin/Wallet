@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addWallet, addSeedPhrase, setLoading, setError } from '../store/walletSlice';
 import { generateWalletFromMnemonic, createWalletData, validateWalletMnemonic } from '../services/wallet';
 import { storageService } from '../services/storage';
-import { selectIsAuthenticated, selectWalletError, selectIsWalletLoading } from '../store/selectors';
+import { selectWalletError, selectIsWalletLoading } from '../store/selectors';
 import Layout from '../components/Layout';
 
 export default function ImportWallet() {
@@ -17,7 +17,7 @@ export default function ImportWallet() {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
   const error = useAppSelector(selectWalletError);
   const isLoading = useAppSelector(selectIsWalletLoading);
 
@@ -52,11 +52,6 @@ export default function ImportWallet() {
   const handleImport = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isAuthenticated) {
-      dispatch(setError('Please authenticate first'));
-      return;
-    }
-
     if (!walletName.trim()) {
       dispatch(setError('Please enter a wallet name'));
       return;
@@ -72,7 +67,16 @@ export default function ImportWallet() {
       const cleanMnemonic = mnemonic.trim().toLowerCase();
       const wallet = await generateWalletFromMnemonic(cleanMnemonic, derivationPath);
       
-      const password = 'temp_password';
+      let password: string;
+      
+      if (!storageService.isSetupComplete()) {
+        // This should trigger password setup flow, but for now show error
+        dispatch(setError('Password setup required. Please create a new wallet first to set up your password.'));
+        return;
+      }
+      
+      const { passwordManager } = await import('../services/passwordManager');
+      password = await passwordManager.requestPassword();
       const seedPhraseData = await storageService.saveEncryptedSeedPhrase(cleanMnemonic, password);
       
       const walletData = createWalletData(

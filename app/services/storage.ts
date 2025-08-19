@@ -22,6 +22,7 @@ export interface SecureStorageService {
   saveEncryptedSeedPhrase: (seedPhrase: string, password: string) => Promise<SeedPhraseData>;
   decryptSeedPhrase: (seedPhraseData: SeedPhraseData, password: string) => Promise<string>;
   clearAllData: () => void;
+  resetApplication: () => void;
   exportData: (password: string) => Promise<string>;
   importData: (data: string, password: string) => Promise<void>;
 }
@@ -190,6 +191,32 @@ class LocalStorageService implements SecureStorageService {
       localStorage.removeItem(STORAGE_KEYS.PASSWORD_HASH);
     } catch (error) {
       console.error('Error clearing storage:', error);
+    }
+  }
+
+  resetApplication(): void {
+    try {
+      // Clear all wallet data
+      localStorage.removeItem(STORAGE_KEYS.WALLET_DATA);
+      localStorage.removeItem(STORAGE_KEYS.PASSWORD_HASH);
+      
+      // Clear session data
+      localStorage.removeItem('trustwallet_session');
+      sessionStorage.removeItem('trustwallet_session');
+      sessionStorage.removeItem('trustwallet_session_expiry');
+      
+      // Clear any other application state
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('trustwallet_')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+    } catch (error) {
+      console.error('Error resetting application:', error);
     }
   }
 

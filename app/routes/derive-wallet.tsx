@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addWallet, setLoading, setError } from '../store/walletSlice';
-import { selectSeedPhrases, selectWallets, selectIsAuthenticated } from '../store/selectors';
+import { selectSeedPhrases, selectWallets } from '../store/selectors';
 import { deriveWalletFromMnemonic, createWalletData, SUPPORTED_NETWORKS } from '../services/wallet';
 import { storageService } from '../services/storage';
 import Layout from '../components/Layout';
@@ -23,14 +23,9 @@ export default function DeriveWallet() {
   
   const seedPhrases = useAppSelector(selectSeedPhrases);
   const wallets = useAppSelector(selectWallets);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/unlock');
-      return;
-    }
-
     const seedFromUrl = searchParams.get('seed');
     if (seedFromUrl && seedPhrases.find(sp => sp.hash === seedFromUrl)) {
       setSelectedSeedHash(seedFromUrl);
@@ -46,7 +41,7 @@ export default function DeriveWallet() {
       const isStandardPath = ["m/44'/60'/0'/0/0", "m/44'/60'/1'/0/0", "m/44'/60'/2'/0/0"].includes(decodedPath);
       setUseCustomPath(!isStandardPath);
     }
-  }, [isAuthenticated, searchParams, seedPhrases, navigate]);
+  }, [searchParams, seedPhrases, navigate]);
 
   const selectedSeed = seedPhrases.find(sp => sp.hash === selectedSeedHash);
   const walletsForSeed = wallets.filter(w => w.seedPhraseHash === selectedSeedHash);
@@ -99,7 +94,8 @@ export default function DeriveWallet() {
     dispatch(setError(null));
 
     try {
-      const password = 'temp_password';
+      const { passwordManager } = await import('../services/passwordManager');
+      const password = await passwordManager.requestPassword();
       const decryptedSeed = await storageService.decryptSeedPhrase(selectedSeed, password);
       
       const wallet = await deriveWalletFromMnemonic(decryptedSeed, pathToUse);
@@ -108,8 +104,7 @@ export default function DeriveWallet() {
         wallet,
         selectedSeedHash,
         walletName.trim(),
-        chainId,
-        pathToUse
+        chainId
       );
 
       dispatch(addWallet(walletData));

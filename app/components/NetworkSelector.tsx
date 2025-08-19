@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSelectedChainId } from '../store/walletSlice';
+import { setSelectedChain } from '../store/walletSlice';
 import { selectSelectedChainId } from '../store/selectors';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
 
@@ -20,7 +20,7 @@ export default function NetworkSelector({
   const selectedChainId = useAppSelector(selectSelectedChainId);
 
   const handleNetworkChange = (chainId: number) => {
-    dispatch(setSelectedChainId(chainId));
+    dispatch(setSelectedChain(chainId));
   };
 
   const currentNetwork = SUPPORTED_NETWORKS.find(n => n.chainId === selectedChainId);

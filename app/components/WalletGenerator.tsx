@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from '../store/hooks';
 import { addWallet, addSeedPhrase, setLoading, setError } from '../store/walletSlice';
+import { setSetupComplete } from '../store/authSlice';
 import { generateWalletMnemonic, generateWalletFromMnemonic, createWalletData } from '../services/wallet';
 import { storageService } from '../services/storage';
+import PasswordSetup from './PasswordSetup';
 // import { selectIsAuthenticated } from '../store/selectors';
 
 interface WalletGeneratorProps {
@@ -15,6 +17,8 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
   const [generatedMnemonic, setGeneratedMnemonic] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMnemonic, setShowMnemonic] = useState(false);
+  const [showPasswordSetup, setShowPasswordSetup] = useState(false);
+
   
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -27,11 +31,21 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       return;
     }
 
-    // if (!isAuthenticated) {
-    //   dispatch(setError('Please authenticate first'));
-    //   return;
-    // }
+    // Check if password setup is needed
+    if (!storageService.isSetupComplete()) {
+      setShowPasswordSetup(true);
+      return;
+    }
 
+    await createWalletWithPassword();
+  };
+
+  const handlePasswordCreated = async (password: string) => {
+    setShowPasswordSetup(false);
+    await createWalletWithPassword(password);
+  };
+
+  const createWalletWithPassword = async (password?: string) => {
     setIsGenerating(true);
     dispatch(setLoading(true));
     dispatch(setError(null));
@@ -42,13 +56,22 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       const wallet = await generateWalletFromMnemonic(mnemonic);
       console.log('wallet: ', wallet);
       
-      const password = 'temp_password';
+      let finalPassword: string;
       
-      if (!storageService.isSetupComplete()) {
+      if (password) {
+        // First time setup - use provided password
         await storageService.setupPassword(password);
+        const { passwordManager } = await import('../services/passwordManager');
+        passwordManager.setCurrentPassword(password);
+        dispatch(setSetupComplete(true));
+        finalPassword = password;
+      } else {
+        // Existing setup - request password
+        const { passwordManager } = await import('../services/passwordManager');
+        finalPassword = await passwordManager.requestPassword();
       }
       
-      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(mnemonic, password);
+      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(mnemonic, finalPassword);
       
       const walletData = createWalletData(
         wallet,
@@ -60,7 +83,7 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       dispatch(addSeedPhrase(seedPhraseData));
       dispatch(addWallet(walletData));
 
-      await storageService.saveWallets([walletData], password);
+      await storageService.saveWallets([walletData], finalPassword);
 
       setGeneratedMnemonic(mnemonic);
       setShowMnemonic(true);
@@ -96,6 +119,23 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
   const handleSkipBackup = () => {
     navigate('/dashboard');
   };
+
+  const handleCancelPasswordSetup = () => {
+    setShowPasswordSetup(false);
+  };
+
+  // Show password setup if needed
+  if (showPasswordSetup) {
+    return (
+      <div className="wallet-generator">
+        <PasswordSetup
+          onPasswordCreated={handlePasswordCreated}
+          onCancel={handleCancelPasswordSetup}
+          isLoading={isGenerating}
+        />
+      </div>
+    );
+  }
 
   if (showMnemonic && generatedMnemonic) {
     return (

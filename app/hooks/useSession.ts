@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { logout, refreshSession } from '../store/authSlice';
-import { selectIsAuthenticated } from '../store/selectors';
-import { sessionManager, type SessionStatus } from '../services/sessionManager';
+import { lock, refreshSession } from '../store/authSlice';
+import { selectIsUnlocked } from '../store/selectors';
+import { getSessionStatus, setEventHandlers, extendSession, lockWallet, loadSession, updateConfig, unlockWallet, type WalletSessionStatus } from '../services/sessionManager';
 
 export interface UseSessionResult {
-  sessionStatus: SessionStatus;
+  sessionStatus: WalletSessionStatus;
   showWarning: boolean;
   extendSession: () => void;
   logoutUser: () => void;
@@ -15,35 +15,37 @@ export interface UseSessionResult {
 }
 
 export const useSession = (): UseSessionResult => {
-  const [sessionStatus, setSessionStatus] = useState<SessionStatus>(() => 
-    sessionManager.getSessionStatus()
+  const [sessionStatus, setSessionStatus] = useState<WalletSessionStatus>(() => 
+    getSessionStatus()
   );
   const [showWarning, setShowWarning] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isUnlocked = useAppSelector(selectIsUnlocked);
 
-  const handleSessionExpired = useCallback(() => {
-    dispatch(logout());
-    sessionManager.clearSession();
+  const handleSessionExpired = useCallback(async () => {
+    const { passwordManager } = await import('../services/passwordManager');
+    passwordManager.clearCurrentPassword();
+    dispatch(lock());
+    lockWallet();
     navigate('/unlock');
   }, [dispatch, navigate]);
 
   const handleSessionWarning = useCallback((timeRemaining: number) => {
     setShowWarning(true);
-    setSessionStatus(sessionManager.getSessionStatus());
+    setSessionStatus(getSessionStatus());
   }, []);
 
   const handleActivityDetected = useCallback(() => {
     dispatch(refreshSession());
   }, [dispatch]);
 
-  const extendSession = useCallback(() => {
-    sessionManager.extendSession();
+  const extendSessionCallback = useCallback(() => {
+    extendSession();
     dispatch(refreshSession());
     setShowWarning(false);
-    setSessionStatus(sessionManager.getSessionStatus());
+    setSessionStatus(getSessionStatus());
   }, [dispatch]);
 
   const logoutUser = useCallback(() => {
@@ -51,13 +53,13 @@ export const useSession = (): UseSessionResult => {
   }, [handleSessionExpired]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isUnlocked) {
       setShowWarning(false);
       return;
     }
 
     // Set up session event handlers
-    sessionManager.setEventHandlers({
+    setEventHandlers({
       onSessionExpired: handleSessionExpired,
       onSessionWarning: handleSessionWarning,
       onActivityDetected: handleActivityDetected,
@@ -65,7 +67,7 @@ export const useSession = (): UseSessionResult => {
 
     // Update session status periodically
     const statusInterval = setInterval(() => {
-      const status = sessionManager.getSessionStatus();
+      const status = getSessionStatus();
       setSessionStatus(status);
       
       if (status.isExpired) {
@@ -76,22 +78,22 @@ export const useSession = (): UseSessionResult => {
     return () => {
       clearInterval(statusInterval);
     };
-  }, [isAuthenticated, handleSessionExpired, handleSessionWarning, handleActivityDetected]);
+  }, [isUnlocked, handleSessionExpired, handleSessionWarning, handleActivityDetected]);
 
   // Clean up warning when session becomes active again
   useEffect(() => {
-    if (sessionStatus.isActive && !sessionStatus.showWarning) {
+    if (sessionStatus.isUnlocked && !sessionStatus.showWarning) {
       setShowWarning(false);
     }
-  }, [sessionStatus.isActive, sessionStatus.showWarning]);
+  }, [sessionStatus.isUnlocked, sessionStatus.showWarning]);
 
   return {
     sessionStatus,
     showWarning: showWarning || sessionStatus.showWarning,
-    extendSession,
+    extendSession: extendSessionCallback,
     logoutUser,
     timeUntilExpiry: sessionStatus.timeRemaining,
-    isSessionActive: sessionStatus.isActive,
+    isSessionActive: sessionStatus.isUnlocked,
   };
 };
 
@@ -100,7 +102,7 @@ export const useSessionSetup = () => {
 
   const initializeSession = useCallback(async (userId?: string, rememberSession = false) => {
     try {
-      await sessionManager.startSession(userId, rememberSession);
+      await unlockWallet();
       return true;
     } catch (error) {
       console.error('Failed to initialize session:', error);
@@ -110,7 +112,7 @@ export const useSessionSetup = () => {
 
   const restoreSession = useCallback(async () => {
     try {
-      const session = await sessionManager.loadSession();
+      const session = await loadSession();
       if (session) {
         dispatch(refreshSession());
         return true;
@@ -127,7 +129,7 @@ export const useSessionSetup = () => {
     maxSessionTime?: number;
     warningTime?: number;
   }) => {
-    sessionManager.updateConfig(config);
+    updateConfig(config);
   }, []);
 
   return {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { selectWallets, selectSeedPhrases, selectIsAuthenticated } from '../store/selectors';
+import { selectWallets, selectSeedPhrases } from '../store/selectors';
 import { updateSeedPhraseBackupStatus } from '../store/walletSlice';
 import { storageService } from '../services/storage';
 import Layout from '../components/Layout';
@@ -20,14 +20,9 @@ export default function BackupVerification() {
   const dispatch = useAppDispatch();
   const wallets = useAppSelector(selectWallets);
   const seedPhrases = useAppSelector(selectSeedPhrases);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/unlock');
-      return;
-    }
-
     const loadLatestSeedPhrase = async () => {
       try {
         const unbackedUpSeeds = seedPhrases.filter(sp => !sp.isBackedUp);
@@ -37,7 +32,8 @@ export default function BackupVerification() {
         }
 
         const latestSeed = unbackedUpSeeds[unbackedUpSeeds.length - 1];
-        const password = 'temp_password';
+        const { passwordManager } = await import('../services/passwordManager');
+        const password = await passwordManager.requestPassword();
         const decryptedSeed = await storageService.decryptSeedPhrase(latestSeed, password);
         
         setSeedPhrase(decryptedSeed.split(' '));
@@ -48,7 +44,7 @@ export default function BackupVerification() {
     };
 
     loadLatestSeedPhrase();
-  }, [isAuthenticated, seedPhrases, navigate]);
+  }, [seedPhrases, navigate]);
 
   const generateRandomWords = () => {
     const commonWords = [
@@ -67,7 +63,7 @@ export default function BackupVerification() {
       return;
     }
 
-    const randomIndices = [];
+    const randomIndices: number[] = [];
     while (randomIndices.length < 6) {
       const randomIndex = Math.floor(Math.random() * 12);
       if (!randomIndices.includes(randomIndex)) {
@@ -150,9 +146,10 @@ export default function BackupVerification() {
     if (!currentSeedHash) return;
 
     try {
-      dispatch(updateSeedPhraseBackupStatus({ seedHash: currentSeedHash, isBackedUp: true }));
+      dispatch(updateSeedPhraseBackupStatus({ hash: currentSeedHash, isBackedUp: true }));
       
-      const password = 'temp_password';
+      const { passwordManager } = await import('../services/passwordManager');
+      const password = await passwordManager.requestPassword();
       const updatedSeedPhrases = seedPhrases.map(sp => 
         sp.hash === currentSeedHash ? { ...sp, isBackedUp: true } : sp
       );

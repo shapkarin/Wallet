@@ -83,6 +83,11 @@ export default function Setup() {
 
     try {
       await storageService.setupPassword(password);
+      
+      // Set the password in the password manager for immediate use
+      const { passwordManager } = await import('../services/passwordManager');
+      passwordManager.setCurrentPassword(password);
+      
       dispatch(setSetupComplete(true));
       navigate('/create-wallet');
     } catch (error) {
