@@ -71,6 +71,7 @@ $breakpoint-xl: 1280px;
   border-radius: $radius-md;
   font-size: 1rem;
   transition: border-color 0.2s ease;
+  color: $text;
   
   &:focus {
     outline: none;
@@ -460,4 +461,8 @@ $breakpoint-xl: 1280px;
     color: $secondary;
     font-size: 0.75rem;
   }
+}
+
+input {
+  color: $text;
 }

@@ -10,9 +10,9 @@
   --color-primary-dark: #2563eb;
   --color-secondary: #6b7280;
   --color-background: #ffffff;
-  --color-background-dark: #111827;
+  --color-background-dark: #ffffff;
   --color-text: #111827;
-  --color-text-dark: #f9fafb;
+  --color-text-dark: #111827;
   --color-border: #e5e7eb;
   --color-border-dark: #374151;
 }
