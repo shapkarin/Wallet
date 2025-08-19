@@ -88,7 +88,18 @@ class LocalStorageService implements SecureStorageService {
   }
 
   async saveWallets(wallets: WalletData[], password: string): Promise<void> {
-    const currentData = await this.loadStorageData(password);
+    let currentData: StorageData;
+    try {
+      currentData = await this.loadStorageData(password);
+    } catch (error) {
+      if (!this.isSetupComplete()) {
+        await this.setupPassword(password);
+        currentData = await this.loadStorageData(password);
+      } else {
+        throw error;
+      }
+    }
+    
     currentData.wallets = wallets;
     currentData.lastUpdated = Date.now();
     
@@ -101,7 +112,18 @@ class LocalStorageService implements SecureStorageService {
   }
 
   async saveSeedPhrases(seedPhrases: SeedPhraseData[], password: string): Promise<void> {
-    const currentData = await this.loadStorageData(password);
+    let currentData: StorageData;
+    try {
+      currentData = await this.loadStorageData(password);
+    } catch (error) {
+      if (!this.isSetupComplete()) {
+        await this.setupPassword(password);
+        currentData = await this.loadStorageData(password);
+      } else {
+        throw error;
+      }
+    }
+    
     currentData.seedPhrases = seedPhrases;
     currentData.lastUpdated = Date.now();
     
@@ -128,7 +150,18 @@ class LocalStorageService implements SecureStorageService {
       walletIds: [],
     };
 
-    const currentData = await this.loadStorageData(password);
+    let currentData: StorageData;
+    try {
+      currentData = await this.loadStorageData(password);
+    } catch (error) {
+      if (!this.isSetupComplete()) {
+        await this.setupPassword(password);
+        currentData = await this.loadStorageData(password);
+      } else {
+        throw error;
+      }
+    }
+
     const existingIndex = currentData.seedPhrases.findIndex(sp => sp.hash === hash);
     
     if (existingIndex >= 0) {

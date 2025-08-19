@@ -43,6 +43,11 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       console.log('wallet: ', wallet);
       
       const password = 'temp_password';
+      
+      if (!storageService.isSetupComplete()) {
+        await storageService.setupPassword(password);
+      }
+      
       const seedPhraseData = await storageService.saveEncryptedSeedPhrase(mnemonic, password);
       
       const walletData = createWalletData(
@@ -52,11 +57,10 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
         1
       );
 
-      dispatch(addSeedPhrase(seedPhraseData)); // TODO
+      dispatch(addSeedPhrase(seedPhraseData));
       dispatch(addWallet(walletData));
 
       await storageService.saveWallets([walletData], password);
-      // await storageService.saveSeedPhrases([seedPhraseData], password);
 
       setGeneratedMnemonic(mnemonic);
       setShowMnemonic(true);

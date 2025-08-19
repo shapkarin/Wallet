@@ -30,7 +30,7 @@ export const generateIV = (): string => {
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
-const deriveKeyFromPassword = async (password: string, salt: string): Promise<CryptoKey> => {
+const deriveKeyFromPassword = async (password: string, salt: string, extractable: boolean = false): Promise<CryptoKey> => {
   if (!window.crypto || !window.crypto.subtle) {
     throw new Error('Web Crypto API not available');
   }
@@ -47,6 +47,8 @@ const deriveKeyFromPassword = async (password: string, salt: string): Promise<Cr
     ['deriveKey']
   );
 
+  const keyUsages = ['encrypt', 'decrypt'] as const;
+  
   return window.crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
@@ -56,8 +58,8 @@ const deriveKeyFromPassword = async (password: string, salt: string): Promise<Cr
     },
     keyMaterial,
     { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
+    extractable,
+    keyUsages
   );
 };
 
@@ -151,7 +153,7 @@ export const decryptWithAESGCM = async (
 
 export const hashPassword = async (password: string): Promise<PasswordHashResult> => {
   const salt = generateSalt();
-  const key = await deriveKeyFromPassword(password, salt);
+  const key = await deriveKeyFromPassword(password, salt, true);
   
   const keyBuffer = await window.crypto.subtle.exportKey('raw', key);
   const hash = Array.from(new Uint8Array(keyBuffer), byte => 
@@ -167,7 +169,7 @@ export const verifyPassword = async (
   salt: string
 ): Promise<boolean> => {
   try {
-    const key = await deriveKeyFromPassword(password, salt);
+    const key = await deriveKeyFromPassword(password, salt, true);
     const keyBuffer = await window.crypto.subtle.exportKey('raw', key);
     const computedHash = Array.from(new Uint8Array(keyBuffer), byte => 
       byte.toString(16).padStart(2, '0')
@@ -183,7 +185,7 @@ export const deriveKeyFromPasswordExport = async (
   password: string,
   salt: string
 ): Promise<Uint8Array> => {
-  const key = await deriveKeyFromPassword(password, salt);
+  const key = await deriveKeyFromPassword(password, salt, true);
   const keyBuffer = await window.crypto.subtle.exportKey('raw', key);
   return new Uint8Array(keyBuffer);
 };
