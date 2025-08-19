@@ -2,25 +2,37 @@
   "manifest_version": 3,
   "name": "TrustWallet",
   "version": "1.0.0",
-  "description": "A secure crypto wallet for managing your digital assets",
+  "description": "A secure non-custodial crypto wallet for managing EVM-compatible digital assets",
   "permissions": [
-    "storage",
-    "activeTab"
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "TrustWallet"
+    "default_title": "TrustWallet",
+    "default_icon": {
+      "16": "favicon.ico",
+      "32": "favicon.ico",
+      "48": "favicon.ico",
+      "128": "favicon.ico"
+    }
   },
   "background": {
     "service_worker": "background.js"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
   "web_accessible_resources": [
     {
-      "resources": ["assets/*"],
+      "resources": ["assets/*", "favicon.ico"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "icons": {
+    "16": "favicon.ico",
+    "32": "favicon.ico",
+    "48": "favicon.ico",
+    "128": "favicon.ico"
+  },
+  "minimum_chrome_version": "88"
 }

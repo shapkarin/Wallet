@@ -4,7 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 import { visualizer } from 'rollup-plugin-visualizer';
-import { resolve } from 'path';
 const currentDir = __dirname;
 
 export default defineConfig(({ mode }) => ({
@@ -22,7 +21,10 @@ export default defineConfig(({ mode }) => ({
             src: 'public/background.js',
             dest: '.'
           },
-
+          {
+            src: 'public/favicon.ico',
+            dest: '.'
+          }
         ]
       })
     ] : [
@@ -66,8 +68,9 @@ export default defineConfig(({ mode }) => ({
     minify: process.env.NODE_ENV === 'production' ? 'terser' : false,
     sourcemap: process.env.NODE_ENV === 'production' ? false : true,
     cssCodeSplit: true,
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false,
+    chunkSizeWarningLimit: 800,
+    reportCompressedSize: process.env.NODE_ENV === 'production',
+    assetsInlineLimit: 4096,
     
     ...(mode === 'extension' ? {
       outDir: 'dist-extension',
@@ -81,7 +84,7 @@ export default defineConfig(({ mode }) => ({
           assetFileNames: 'assets/[name]-[hash].[ext]',
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              if (id.includes('bip39') || id.includes('ethers')) {
+              if (id.includes('bip39') || id.includes('ethers') || id.includes('buffer')) {
                 return 'crypto-vendor';
               }
               if (id.includes('react') || id.includes('redux')) {
@@ -90,6 +93,7 @@ export default defineConfig(({ mode }) => ({
               if (id.includes('react-router')) {
                 return 'router-vendor';
               }
+              return 'vendor';
             }
           }
         },
@@ -101,7 +105,7 @@ export default defineConfig(({ mode }) => ({
         output: {
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              if (id.includes('bip39') || id.includes('ethers')) {
+              if (id.includes('bip39') || id.includes('ethers') || id.includes('buffer')) {
                 return 'crypto-vendor';
               }
               if (id.includes('react') || id.includes('redux')) {
@@ -110,6 +114,7 @@ export default defineConfig(({ mode }) => ({
               if (id.includes('react-router')) {
                 return 'router-vendor';
               }
+              return 'vendor';
             }
           }
         }
@@ -118,12 +123,22 @@ export default defineConfig(({ mode }) => ({
 
     terserOptions: {
       compress: {
-        drop_console: mode === 'production',
+        drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: true,
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : []
+        pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+        passes: 2,
+        unsafe: false,
+        unsafe_comps: false,
+        unsafe_math: false,
+        unsafe_proto: false
       },
       mangle: {
-        safari10: true
+        safari10: true,
+        keep_fnames: false,
+        keep_classnames: false
+      },
+      format: {
+        comments: false
       }
     }
   }
