@@ -117,7 +117,7 @@ export default function Setup() {
             <div className="notice-content">
               <h4>Important Security Information</h4>
               <ul>
-                <li>This password encrypts your seed phrases using Argon2</li>
+                <li>This password encrypts your seed phrases using strong encryption</li>
                 <li>We cannot recover your password if you forget it</li>
                 <li>Choose a strong, unique password you can remember</li>
                 <li>Consider using a password manager</li>

@@ -2,17 +2,14 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-import wasm from "vite-plugin-wasm";
-import topLevelAwait from "vite-plugin-top-level-await";
+
 import { visualizer } from 'rollup-plugin-visualizer';
 import { resolve } from 'path';
 const currentDir = __dirname;
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    wasm(),
-    topLevelAwait(),
-    reactRouter(), 
+    ...(mode === 'extension' ? [] : [reactRouter()]),
     tsconfigPaths(),
     ...(mode === 'extension' ? [
       viteStaticCopy({
@@ -62,11 +59,8 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ['buffer'],
   },
-  assetsInclude: ['**/*.wasm'],
-  worker: {
-    format: 'es',
-    plugins: () => [wasm(), topLevelAwait()],
-  },
+
+
   build: {
     target: 'es2020',
     minify: process.env.NODE_ENV === 'production' ? 'terser' : false,
@@ -79,7 +73,7 @@ export default defineConfig(({ mode }) => ({
       outDir: 'dist-extension',
       rollupOptions: {
         input: {
-          popup: 'index.html'
+          popup: 'public/popup.html'
         },
         output: {
           entryFileNames: 'assets/[name]-[hash].js',

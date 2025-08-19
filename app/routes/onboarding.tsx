@@ -30,7 +30,7 @@ export default function Onboarding() {
             <div className="feature-item">
               <div className="feature-icon">🔐</div>
               <h3>Secure & Private</h3>
-              <p>Your private keys are encrypted with Argon2 and stored locally. No one else has access.</p>
+              <p>Your private keys are encrypted with strong encryption and stored locally. No one else has access.</p>
             </div>
             
             <div className="feature-item">
