@@ -368,3 +368,96 @@ $breakpoint-xl: 1280px;
 .requirement-text {
   line-height: 1.2;
 }
+
+// Session Warning Styles
+.session-warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  @include flex-center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.session-warning-modal {
+  background-color: $background;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: $shadow-lg;
+  border: 2px solid $warning;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: $background-dark;
+    border-color: #f59e0b;
+  }
+}
+
+.session-warning-header {
+  @include flex-between;
+  margin-bottom: $spacing-lg;
+  
+  h3 {
+    color: $warning;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.session-warning-icon {
+  font-size: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.session-warning-content {
+  margin-bottom: $spacing-lg;
+  
+  p {
+    margin-bottom: $spacing-md;
+    line-height: 1.5;
+    color: $text;
+
+    @media (prefers-color-scheme: dark) {
+      color: $text-dark;
+    }
+
+    strong {
+      color: $warning;
+      font-weight: 600;
+    }
+  }
+}
+
+.session-warning-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  .btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.session-warning-footer {
+  text-align: center;
+  
+  small {
+    color: $secondary;
+    font-size: 0.75rem;
+  }
+}
