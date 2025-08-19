@@ -6,3 +6,7 @@ package-lock.json
 # React Router
 /.react-router/
 /build/
+
+# Chrome Extension build
+/dist-extension/
+
