@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 import { visualizer } from 'rollup-plugin-visualizer';
+import { resolve } from 'path';
 const currentDir = __dirname;
 
 export default defineConfig(({ mode }) => ({
@@ -75,9 +76,7 @@ export default defineConfig(({ mode }) => ({
     ...(mode === 'extension' ? {
       outDir: 'dist-extension',
       rollupOptions: {
-        input: {
-          popup: 'public/popup.html'
-        },
+        input: resolve(__dirname, 'public/popup.html'),
         output: {
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
