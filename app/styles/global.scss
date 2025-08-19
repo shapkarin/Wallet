@@ -232,3 +232,139 @@ $breakpoint-xl: 1280px;
     border-color: #92400e;
   }
 }
+
+// Validation Styles
+.validation-message {
+  margin-top: $spacing-sm;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.validation-errors,
+.validation-warnings {
+  margin-bottom: $spacing-sm;
+}
+
+.validation-error {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  color: $error;
+  margin-bottom: $spacing-xs;
+
+  .validation-icon {
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+}
+
+.validation-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  color: $warning;
+  margin-bottom: $spacing-xs;
+
+  .validation-icon {
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+}
+
+.validation-success {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $success;
+  font-weight: 500;
+
+  .validation-icon {
+    font-size: 0.75rem;
+  }
+}
+
+.password-strength {
+  margin-top: $spacing-md;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: $spacing-md;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #374151;
+  }
+}
+
+.password-strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+
+  &.strength-0,
+  &.strength-1 {
+    background-color: #ef4444;
+  }
+
+  &.strength-2 {
+    background-color: #f59e0b;
+  }
+
+  &.strength-3 {
+    background-color: #eab308;
+  }
+
+  &.strength-4 {
+    background-color: #22c55e;
+  }
+
+  &.strength-5 {
+    background-color: #10b981;
+  }
+}
+
+.password-requirements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-xs;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: 0.75rem;
+
+  &.met {
+    color: $success;
+    
+    .requirement-icon {
+      color: $success;
+    }
+  }
+
+  &.unmet {
+    color: $secondary;
+    
+    .requirement-icon {
+      color: $secondary;
+    }
+  }
+}
+
+.requirement-icon {
+  font-size: 0.625rem;
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.requirement-text {
+  line-height: 1.2;
+}
