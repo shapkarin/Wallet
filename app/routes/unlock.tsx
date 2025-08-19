@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { unlock, lock, setLoading, setError, refreshSession } from '../store/authSlice';
+import { loadWalletsFromStorage } from '../store/walletSlice';
 import { selectAuthLoading, selectAuthError, selectIsUnlocked, selectIsSetupComplete } from '../store/selectors';
 import { storageService } from '../services/storage';
 import Layout from '../components/Layout';
@@ -35,6 +36,7 @@ export default function Unlock() {
           const now = Date.now();
           if (now - sessionData.timestamp < 24 * 60 * 60 * 1000) {
             dispatch(unlock());
+            // Note: Wallets will be loaded by the dashboard effect when needed
             navigate('/dashboard');
           } else {
             localStorage.removeItem('trustwallet_session');
@@ -67,6 +69,14 @@ export default function Unlock() {
         passwordManager.setCurrentPassword(password);
         
         dispatch(unlock());
+        
+        try {
+          const wallets = await storageService.loadWallets(password);
+          const seedPhrases = await storageService.loadSeedPhrases(password);
+          dispatch(loadWalletsFromStorage({ wallets, seedPhrases }));
+        } catch (error) {
+          console.warn('Failed to load wallets on unlock:', error);
+        }
         
         if (rememberSession) {
           const sessionData = {

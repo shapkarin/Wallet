@@ -1,17 +1,44 @@
 import { useNavigate } from 'react-router';
-import { useAppSelector } from '../store/hooks';
-import { selectWallets, selectSeedPhrases, selectUnbackedUpSeedPhrases, selectWalletsBySeedPhrase } from '../store/selectors';
-import Layout from '../components/Layout';
+import { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { selectWallets, selectSeedPhrases, selectUnbackedUpSeedPhrases, selectWalletsBySeedPhrase, selectIsUnlocked } from '../store/selectors';
+import { loadWalletsFromStorage } from '../store/walletSlice';
+import { storageService } from '../services/storage';
 import MainLayout from '../components/MainLayout';
 import WalletList from '../components/WalletList';
 import BalanceDashboard from '../components/BalanceDashboard';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const wallets = useAppSelector(selectWallets);
   const seedPhrases = useAppSelector(selectSeedPhrases);
   const unbackedUpSeeds = useAppSelector(selectUnbackedUpSeedPhrases);
   const walletsBySeed = useAppSelector(selectWalletsBySeedPhrase);
+  const isUnlocked = useAppSelector(selectIsUnlocked);
+
+  useEffect(() => {
+    const loadWalletsIfNeeded = async () => {
+      if (isUnlocked && wallets.length === 0 && seedPhrases.length === 0) {
+        try {
+          const { passwordManager } = await import('../services/passwordManager');
+          const password = await passwordManager.requestPassword({
+            title: 'Load Wallets',
+            message: 'Enter your password to load your wallets'
+          });
+          
+          const loadedWallets = await storageService.loadWallets(password);
+          const loadedSeedPhrases = await storageService.loadSeedPhrases(password);
+          
+          dispatch(loadWalletsFromStorage({ wallets: loadedWallets, seedPhrases: loadedSeedPhrases }));
+        } catch (error) {
+          console.warn('Failed to load wallets in dashboard:', error);
+        }
+      }
+    };
+
+    loadWalletsIfNeeded();
+  }, [isUnlocked, wallets.length, seedPhrases.length, dispatch]);
 
   const handleCreateWallet = () => {
     navigate('/create-wallet');
@@ -25,11 +52,27 @@ export default function Dashboard() {
     navigate('/derive-wallet');
   };
 
-  const handleBackupSeed = (seedHash: string) => {
+  const handleBackupSeed = (_seedHash: string) => {
     navigate('/create-wallet/backup-prompt');
   };
 
-  const totalBalance = 0;
+  const handleManualLoadWallets = async () => {
+    try {
+      const { passwordManager } = await import('../services/passwordManager');
+      const password = await passwordManager.requestPassword({
+        title: 'Load Wallets',
+        message: 'Enter your password to load your wallets'
+      });
+      
+      const loadedWallets = await storageService.loadWallets(password);
+      const loadedSeedPhrases = await storageService.loadSeedPhrases(password);
+      
+      dispatch(loadWalletsFromStorage({ wallets: loadedWallets, seedPhrases: loadedSeedPhrases }));
+    } catch (error) {
+      console.warn('Failed to manually load wallets:', error);
+    }
+  };
+
   const backedUpSeeds = seedPhrases.filter(sp => sp.isBackedUp).length;
 
   return (
@@ -38,6 +81,10 @@ export default function Dashboard() {
         <div className="dashboard-header">
           <h1>Wallet Dashboard</h1>
           <p>Manage your crypto wallets and view balances</p>
+          {/* Temporary debug button */}
+          <button onClick={handleManualLoadWallets} style={{ background: 'red', color: 'white', padding: '10px', margin: '10px' }}>
+            DEBUG: Manually Load Wallets ({wallets.length} wallets, {seedPhrases.length} seeds)
+          </button>
         </div>
 
         {unbackedUpSeeds.length > 0 && (
