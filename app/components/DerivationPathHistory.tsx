@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAppSelector } from '../store/hooks';
 import { selectWallets } from '../store/selectors';
-import { Wallet } from '../store/types';
+import type { WalletData } from '../store/types';
 
 interface DerivationPathHistoryProps {
   seedPhraseHash: string;
@@ -14,7 +14,7 @@ interface PathInfo {
   account: number;
   change: number;
   index: number;
-  wallet?: Wallet;
+  wallet?: WalletData;
   isGap: boolean;
 }
 

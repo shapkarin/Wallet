@@ -1,4 +1,4 @@
-import { encryptWithAESGCM, decryptWithAESGCM, hashPassword, verifyPassword } from './encryptionImproved';
+import { encryptWithAESGCM, decryptWithAESGCM, hashPassword, verifyPassword } from './encryptionFallback';
 import type { WalletData, SeedPhraseData } from '../store/types';
 
 export interface StorageData {

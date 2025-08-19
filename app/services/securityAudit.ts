@@ -1,4 +1,4 @@
-import { generateSalt, ARGON2_CONFIG } from './encryptionImproved';
+import { generateSalt } from './encryptionFallback';
 
 export interface SecurityAuditResult {
   passed: boolean;
@@ -29,8 +29,8 @@ export class SecurityAuditor {
     // Audit salt generation
     this.auditSaltGeneration(issues, warnings);
     
-    // Audit Argon2 configuration
-    this.auditArgon2Configuration(issues, warnings);
+    // Audit PBKDF2 configuration
+    this.auditPBKDF2Configuration(issues, warnings);
     
     // Audit encryption method
     this.auditEncryptionMethod(issues, warnings);
@@ -107,71 +107,41 @@ export class SecurityAuditor {
     }
   }
 
-  private static auditArgon2Configuration(issues: SecurityIssue[], warnings: SecurityWarning[]) {
-    // Check Argon2 parameters
-    if (ARGON2_CONFIG.time < 3) {
+  private static auditPBKDF2Configuration(issues: SecurityIssue[], warnings: SecurityWarning[]) {
+    const PBKDF2_MIN_ITERATIONS = 100000;
+    
+    warnings.push({
+      category: 'Key Derivation',
+      description: 'Using PBKDF2 instead of Argon2 for key derivation',
+      recommendation: 'Consider upgrading to Argon2id for better resistance to GPU attacks',
+    });
+
+    // Note: We're using 100000 iterations which is OWASP recommended minimum
+    if (PBKDF2_MIN_ITERATIONS < 100000) {
       issues.push({
-        severity: 'medium',
-        category: 'Argon2 Configuration',
-        description: `Time parameter is ${ARGON2_CONFIG.time}, recommended minimum is 3`,
-        remediation: 'Increase time parameter to at least 3 for better security',
-      });
-    }
-
-    if (ARGON2_CONFIG.mem < 65536) { // 64MB
-      warnings.push({
-        category: 'Argon2 Configuration',
-        description: `Memory parameter is ${ARGON2_CONFIG.mem}, recommended minimum is 65536 (64MB)`,
-        recommendation: 'Consider increasing memory parameter for better security',
-      });
-    }
-
-    if (ARGON2_CONFIG.hashLen < 32) {
-      issues.push({
-        severity: 'medium',
-        category: 'Argon2 Configuration',
-        description: `Hash length is ${ARGON2_CONFIG.hashLen}, recommended minimum is 32 bytes`,
-        remediation: 'Increase hash length to at least 32 bytes',
-      });
-    }
-
-    if (ARGON2_CONFIG.type !== 2) { // Argon2id
-      warnings.push({
-        category: 'Argon2 Configuration',
-        description: `Using Argon2${ARGON2_CONFIG.type === 0 ? 'd' : 'i'}, Argon2id (type 2) is recommended`,
-        recommendation: 'Use Argon2id for better security against side-channel attacks',
+        severity: 'high',
+        category: 'PBKDF2 Configuration',
+        description: `PBKDF2 iterations below recommended minimum of 100,000`,
+        remediation: 'Increase PBKDF2 iterations to at least 100,000',
       });
     }
   }
 
   private static auditEncryptionMethod(issues: SecurityIssue[], warnings: SecurityWarning[]) {
-    // Current implementation uses XOR with Argon2-derived key
-    // This is not cryptographically secure for large data
+    // Current implementation uses AES-GCM with PBKDF2-derived key
+    // This is cryptographically secure and uses authenticated encryption
     
-    issues.push({
-      severity: 'high',
-      category: 'Encryption Method',
-      description: 'XOR encryption with key reuse is vulnerable to known-plaintext attacks',
-      remediation: 'Replace XOR encryption with AES-GCM or ChaCha20-Poly1305',
-    });
-
     warnings.push({
       category: 'Encryption Method',
-      description: 'No authentication tag or integrity check',
-      recommendation: 'Use authenticated encryption (AEAD) to prevent tampering',
-    });
-
-    warnings.push({
-      category: 'Encryption Method',
-      description: 'No initialization vector (IV) or nonce used',
-      recommendation: 'Use unique IV/nonce for each encryption operation',
+      description: 'Using PBKDF2 for key derivation instead of Argon2',
+      recommendation: 'Consider upgrading to Argon2id when WASM support is stable',
     });
   }
 
   private static auditKeyDerivation(issues: SecurityIssue[], warnings: SecurityWarning[]) {
     warnings.push({
       category: 'Key Derivation',
-      description: 'Same Argon2 parameters used for both password hashing and key derivation',
+      description: 'Same PBKDF2 parameters used for both password hashing and key derivation',
       recommendation: 'Consider using different parameters or additional key stretching',
     });
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setSessionTimeout, logout } from '../store/authSlice';
-import { setSelectedChainId } from '../store/walletSlice';
+import { setSelectedChain } from '../store/walletSlice';
 import { selectSessionInfo, selectIsAuthenticated } from '../store/selectors';
 import { selectSelectedChainId, selectWallets, selectSeedPhrases } from '../store/selectors';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
@@ -44,7 +44,7 @@ export default function Settings() {
 
   const handleNetworkChange = (chainId: number) => {
     setSelectedNetwork(chainId);
-    dispatch(setSelectedChainId(chainId));
+    dispatch(setSelectedChain(chainId));
   };
 
   const handleExportAllData = async () => {
