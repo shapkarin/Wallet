@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch } from '../store/hooks';
 import { addWallet, addSeedPhrase, setLoading, setError } from '../store/walletSlice';
 import { generateWalletMnemonic, generateWalletFromMnemonic, createWalletData } from '../services/wallet';
 import { storageService } from '../services/storage';
-import { selectIsAuthenticated } from '../store/selectors';
+// import { selectIsAuthenticated } from '../store/selectors';
 
 interface WalletGeneratorProps {
   onWalletGenerated?: () => void;
@@ -18,18 +18,19 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
   
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  // const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const handleGenerateWallet = async () => {
+    console.log('handleGenerateWallet: ', walletName);
     if (!walletName.trim()) {
       dispatch(setError('Please enter a wallet name'));
       return;
     }
 
-    if (!isAuthenticated) {
-      dispatch(setError('Please authenticate first'));
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   dispatch(setError('Please authenticate first'));
+    //   return;
+    // }
 
     setIsGenerating(true);
     dispatch(setLoading(true));
@@ -37,7 +38,9 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
 
     try {
       const mnemonic = generateWalletMnemonic();
+      console.log('mnemonic: ', mnemonic);
       const wallet = await generateWalletFromMnemonic(mnemonic);
+      console.log('wallet: ', wallet);
       
       const password = 'temp_password';
       const seedPhraseData = await storageService.saveEncryptedSeedPhrase(mnemonic, password);
@@ -49,11 +52,11 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
         1
       );
 
-      dispatch(addSeedPhrase(seedPhraseData));
+      dispatch(addSeedPhrase(seedPhraseData)); // TODO
       dispatch(addWallet(walletData));
 
       await storageService.saveWallets([walletData], password);
-      await storageService.saveSeedPhrases([seedPhraseData], password);
+      // await storageService.saveSeedPhrases([seedPhraseData], password);
 
       setGeneratedMnemonic(mnemonic);
       setShowMnemonic(true);
@@ -63,6 +66,7 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
       }
 
     } catch (error) {
+      console.error('Failed to generate wallet: ', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate wallet';
       dispatch(setError(errorMessage));
     } finally {

@@ -21,6 +21,7 @@ const walletSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    // TODO
     addSeedPhrase: (state, action: PayloadAction<SeedPhraseData>) => {
       state.seedPhrases.push(action.payload);
     },

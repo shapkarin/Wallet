@@ -1,4 +1,5 @@
-import { validateMnemonic } from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -150,7 +151,7 @@ export class ValidationService {
     }
 
     try {
-      const isValidBip39 = validateMnemonic(cleanMnemonic);
+      const isValidBip39 = bip39.validateMnemonic(cleanMnemonic, wordlist);
       if (!isValidBip39) {
         errors.push('Invalid mnemonic phrase. Please check the words and their order.');
       }

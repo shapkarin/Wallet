@@ -2,6 +2,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { Buffer } from 'buffer';
 
 import { visualizer } from 'rollup-plugin-visualizer';
 import { resolve } from 'path';
@@ -53,6 +54,7 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: 'globalThis',
+    'global.Buffer': Buffer,
   },
   resolve: {
     alias: {
@@ -60,7 +62,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['buffer'],
+    include: ['buffer', 'ethers', '@scure/bip39'],
   },
 
 
@@ -83,7 +85,7 @@ export default defineConfig(({ mode }) => ({
           assetFileNames: 'assets/[name]-[hash].[ext]',
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              if (id.includes('bip39') || id.includes('ethers') || id.includes('buffer')) {
+              if (id.includes('@scure/bip39') || id.includes('ethers') || id.includes('buffer')) {
                 return 'crypto-vendor';
               }
               if (id.includes('react') || id.includes('redux')) {
@@ -104,7 +106,7 @@ export default defineConfig(({ mode }) => ({
         output: {
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              if (id.includes('bip39') || id.includes('ethers') || id.includes('buffer')) {
+              if (id.includes('@scure/bip39') || id.includes('ethers') || id.includes('buffer')) {
                 return 'crypto-vendor';
               }
               if (id.includes('react') || id.includes('redux')) {

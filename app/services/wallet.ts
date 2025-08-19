@@ -1,4 +1,5 @@
-import { generateMnemonic, mnemonicToSeed, validateMnemonic } from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 import { HDNodeWallet, Wallet, getDefaultProvider } from 'ethers';
 import type { WalletData, NetworkConfig } from '../store/types';
 
@@ -52,22 +53,22 @@ export const SUPPORTED_NETWORKS: NetworkConfig[] = [
 ];
 
 export const generateWalletMnemonic = (): string => {
-  return generateMnemonic(128);
+  return bip39.generateMnemonic(wordlist, 128);
 };
 
 export const validateWalletMnemonic = (mnemonic: string): boolean => {
-  return validateMnemonic(mnemonic);
+  return bip39.validateMnemonic(mnemonic, wordlist);
 };
 
 export const generateWalletFromMnemonic = async (
   mnemonic: string,
   derivationPath: string = "m/44'/60'/0'/0/0"
 ): Promise<GeneratedWallet> => {
-  if (!validateMnemonic(mnemonic)) {
+  if (!bip39.validateMnemonic(mnemonic, wordlist)) {
     throw new Error('Invalid mnemonic phrase');
   }
 
-  const seed = await mnemonicToSeed(mnemonic);
+  const seed = await bip39.mnemonicToSeed(mnemonic);
   const hdWallet = HDNodeWallet.fromSeed(seed);
   const derivedWallet = hdWallet.derivePath(derivationPath);
 
@@ -83,7 +84,7 @@ export const deriveWalletFromMnemonic = async (
   mnemonic: string,
   derivationPath: string
 ): Promise<DerivedWallet> => {
-  if (!validateMnemonic(mnemonic)) {
+  if (!bip39.validateMnemonic(mnemonic, wordlist)) {
     throw new Error('Invalid mnemonic phrase');
   }
 
@@ -91,7 +92,7 @@ export const deriveWalletFromMnemonic = async (
     throw new Error('Invalid derivation path format');
   }
 
-  const seed = await mnemonicToSeed(mnemonic);
+  const seed = await bip39.mnemonicToSeed(mnemonic);
   const hdWallet = HDNodeWallet.fromSeed(seed);
   const derivedWallet = hdWallet.derivePath(derivationPath);
 
