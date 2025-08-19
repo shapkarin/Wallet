@@ -10,12 +10,12 @@ export interface PasswordHashResult {
   salt: string;
 }
 
-const ARGON2_CONFIG = {
-  time: 3,
-  mem: 65536,
+export const ARGON2_CONFIG = {
+  time: 4,
+  mem: 131072, // 128MB for better security
   hashLen: 32,
-  parallelism: 1,
-  type: 0,
+  parallelism: 2,
+  type: 2, // Argon2id for better security against side-channel attacks
 };
 
 export const generateSalt = (): string => {
