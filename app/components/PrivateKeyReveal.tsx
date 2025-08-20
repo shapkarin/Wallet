@@ -152,7 +152,7 @@ export default function PrivateKeyReveal({ walletId }: PrivateKeyRevealProps) {
                 type={isVisible ? 'text' : 'password'}
                 value={privateKey}
                 readOnly
-                className="private-key-input"
+                className="form-input private-key-input"
               />
               <div className="private-key-actions">
                 <button

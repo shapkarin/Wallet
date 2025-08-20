@@ -155,6 +155,7 @@ export default function ImportWallet() {
               <input
                 id="walletName"
                 type="text"
+                className="form-input"
                 value={walletName}
                 onChange={(e) => setWalletName(e.target.value)}
                 placeholder="Enter a name for this wallet"
@@ -177,6 +178,7 @@ export default function ImportWallet() {
               </div>
               <textarea
                 id="mnemonic"
+                className="form-input"
                 value={mnemonic}
                 onChange={(e) => handleMnemonicChange(e.target.value)}
                 placeholder="Enter your seed phrase (12 words separated by spaces)"

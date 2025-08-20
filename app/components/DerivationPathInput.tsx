@@ -149,7 +149,7 @@ export default function DerivationPathInput({
                 onChange={(e) => handlePathChange(e.target.value)}
                 placeholder="m/44'/60'/0'/0/0"
                 disabled={disabled}
-                className={`form-input custom-path-input ${validation.isValid ? 'valid' : 'invalid'}`}
+                className={`form-input ${validation.isValid ? 'valid' : 'invalid'}`}
               />
               <div className="path-format-help">
                 <h5>BIP-44 Path Format:</h5>

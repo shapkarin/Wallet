@@ -56,7 +56,7 @@ export default function WalletIDDeletionWarning({
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="Type confirmation text here"
-              className="confirmation-field"
+              className="form-input confirmation-field"
             />
           </div>
         </div>

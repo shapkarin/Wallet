@@ -1,4 +1,9 @@
-// Component Styles for TrustWallet
+// TODO: use scss modules instead of global styles
+
+.overview-stats {
+  display: flex;
+  gap: 40px;
+}
 
 // WalletID Deletion Warning Modal
 .deletion-warning-modal {

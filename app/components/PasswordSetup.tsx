@@ -109,6 +109,7 @@ export default function PasswordSetup({ onPasswordCreated, onCancel, isLoading =
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
+              className="form-input"
               value={password}
               onChange={(e) => handlePasswordChange(e.target.value)}
               placeholder="Enter a strong password"
@@ -148,6 +149,7 @@ export default function PasswordSetup({ onPasswordCreated, onCancel, isLoading =
           <input
             id="confirmPassword"
             type={showPassword ? 'text' : 'password'}
+            className="form-input"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm your password"

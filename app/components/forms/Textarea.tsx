@@ -15,7 +15,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   className = '',
   ...props
 }, ref) => {
-  const baseClasses = 'form-textarea';
+  const baseClasses = 'form-input';
   const errorClasses = error ? 'error' : '';
   const resizeClasses = `resize-${resize}`;
   

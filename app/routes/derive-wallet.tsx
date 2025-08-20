@@ -213,6 +213,7 @@ export default function DeriveWallet() {
                 onChange={(e) => setWalletName(e.target.value)}
                 placeholder="Enter wallet name"
                 disabled={isGenerating}
+                className="form-input"
                 required
               />
             </div>
