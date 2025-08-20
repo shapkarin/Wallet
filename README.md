@@ -1,5 +1,3 @@
-# TODO: use wallet0 or it's hash instead of seed phrase hash,
-
 # Run the project
 Install deps
 ```sh
