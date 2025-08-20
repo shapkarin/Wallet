@@ -67,7 +67,7 @@ export default function DeriveWallet() {
   const handleDerive = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedSeedHash || !selectedSeed) {
+    if (!selectedWalletIDHash || !selectedSeed) {
       dispatch(setError('Please select a seed phrase'));
       return;
     }
@@ -255,7 +255,7 @@ export default function DeriveWallet() {
                 disabled={
                   isGenerating || 
                   !walletName.trim() || 
-                  !selectedSeedHash ||
+                  !selectedWalletIDHash ||
                   !validateDerivationPath(useCustomPath ? customPath : derivationPath) ||
                   usedPaths.includes(useCustomPath ? customPath : derivationPath)
                 }
