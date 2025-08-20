@@ -77,13 +77,14 @@ export default function ImportWallet() {
       
       const { passwordManager } = await import('../services/passwordManager');
       password = await passwordManager.requestPassword();
-      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(cleanMnemonic, password);
+      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(cleanMnemonic, password, wallet.address);
       
       const walletData = createWalletData(
         wallet,
-        seedPhraseData.hash,
+        seedPhraseData.walletIDHash,
         walletName.trim(),
         chainId,
+        true  // isWalletID = true (this is the first/primary wallet from imported seed)
       );
 
       dispatch(addSeedPhrase(seedPhraseData));

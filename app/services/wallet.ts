@@ -170,16 +170,18 @@ export const getWalletBalance = async (
 
 export const createWalletData = (
   wallet: GeneratedWallet | DerivedWallet,
-  seedPhraseHash: string,
+  walletIDHash: string,
   name: string,
-  chainId: number = 1
+  chainId: number = 1,
+  isWalletID: boolean = false
 ): WalletData => {
   return {
     id: `wallet_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     name,
     address: wallet.address,
     derivationPath: wallet.derivationPath,
-    seedPhraseHash,
+    walletIDHash,
+    isWalletID,
     chainId,
     createdAt: Date.now(),
     isBackedUp: false,

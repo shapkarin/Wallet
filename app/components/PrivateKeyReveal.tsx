@@ -20,7 +20,7 @@ export default function PrivateKeyReveal({ walletId }: PrivateKeyRevealProps) {
   const seedPhrases = useAppSelector(selectSeedPhrases);
   
   const wallet = wallets.find(w => w.id === walletId);
-  const seedPhrase = seedPhrases.find(sp => sp.hash === wallet?.seedPhraseHash);
+  const seedPhrase = seedPhrases.find(sp => sp.walletIDHash === wallet?.walletIDHash);
 
   const handleRevealPrivateKey = async () => {
     if (!wallet || !seedPhrase) {
