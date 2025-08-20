@@ -18,7 +18,7 @@ export default function MnemonicReveal({ walletId }: MnemonicRevealProps) {
   const seedPhrases = useAppSelector(selectSeedPhrases);
   
   const wallet = wallets.find(w => w.id === walletId);
-  const seedPhrase = seedPhrases.find(sp => sp.hash === wallet?.seedPhraseHash);
+  const seedPhrase = seedPhrases.find(sp => sp.walletIDHash === wallet?.walletIDHash);
 
   const handleRevealMnemonic = async () => {
     if (!wallet || !seedPhrase) {
@@ -88,7 +88,7 @@ export default function MnemonicReveal({ walletId }: MnemonicRevealProps) {
         <div className="wallet-info">
           <h3>{wallet.name}</h3>
           <p className="wallet-address">{wallet.address}</p>
-          <p className="seed-hash">Seed: {wallet.seedPhraseHash.slice(0, 8)}...{wallet.seedPhraseHash.slice(-8)}</p>
+          <p className="walletID-hash">ID: {wallet.walletIDHash.slice(0, 8)}...{wallet.walletIDHash.slice(-8)}</p>
         </div>
       </div>
 

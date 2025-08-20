@@ -23,7 +23,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   className = '',
   ...props
 }, ref) => {
-  const baseClasses = 'form-select';
+  const baseClasses = 'form-input';
   const errorClasses = error ? 'error' : '';
   
   const selectClasses = [baseClasses, errorClasses, className]

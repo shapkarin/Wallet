@@ -9,7 +9,7 @@ import Layout from '../components/Layout';
 import DerivationPathInput from '../components/DerivationPathInput';
 
 export default function DeriveWallet() {
-  const [selectedSeedHash, setSelectedSeedHash] = useState('');
+  const [selectedWalletIDHash, setSelectedWalletIDHash] = useState('');
   const [walletName, setWalletName] = useState('');
   const [derivationPath, setDerivationPath] = useState("m/44'/60'/0'/0/0");
   const [customPath, setCustomPath] = useState('');
@@ -26,11 +26,11 @@ export default function DeriveWallet() {
 
 
   useEffect(() => {
-    const seedFromUrl = searchParams.get('seed');
-    if (seedFromUrl && seedPhrases.find(sp => sp.hash === seedFromUrl)) {
-      setSelectedSeedHash(seedFromUrl);
+    const walletIDHashFromUrl = searchParams.get('walletIDHash');
+    if (walletIDHashFromUrl && seedPhrases.find(sp => sp.walletIDHash === walletIDHashFromUrl)) {
+      setSelectedWalletIDHash(walletIDHashFromUrl);
     } else if (seedPhrases.length > 0) {
-      setSelectedSeedHash(seedPhrases[0].hash);
+      setSelectedWalletIDHash(seedPhrases[0].walletIDHash);
     }
 
     const pathFromUrl = searchParams.get('path');
@@ -43,8 +43,8 @@ export default function DeriveWallet() {
     }
   }, [searchParams, seedPhrases, navigate]);
 
-  const selectedSeed = seedPhrases.find(sp => sp.hash === selectedSeedHash);
-  const walletsForSeed = wallets.filter(w => w.seedPhraseHash === selectedSeedHash);
+  const selectedSeed = seedPhrases.find(sp => sp.walletIDHash === selectedWalletIDHash);
+  const walletsForSeed = wallets.filter(w => w.walletIDHash === selectedWalletIDHash);
   const usedPaths = walletsForSeed.map(w => w.derivationPath);
 
   const generateNextPath = () => {
@@ -67,7 +67,7 @@ export default function DeriveWallet() {
   const handleDerive = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedSeedHash || !selectedSeed) {
+    if (!selectedWalletIDHash || !selectedSeed) {
       dispatch(setError('Please select a seed phrase'));
       return;
     }
@@ -102,9 +102,10 @@ export default function DeriveWallet() {
       
       const walletData = createWalletData(
         wallet,
-        selectedSeedHash,
+        selectedWalletIDHash,
         walletName.trim(),
-        chainId
+        chainId,
+        false  // isWalletID = false (this is a derived wallet)
       );
 
       dispatch(addWallet(walletData));
@@ -175,13 +176,13 @@ export default function DeriveWallet() {
               <label htmlFor="seedPhrase">Select Seed Phrase</label>
               <select
                 id="seedPhrase"
-                value={selectedSeedHash}
-                onChange={(e) => setSelectedSeedHash(e.target.value)}
+                value={selectedWalletIDHash}
+                onChange={(e) => setSelectedWalletIDHash(e.target.value)}
                 disabled={isGenerating}
                 required
               >
                 {seedPhrases.map((seed, index) => (
-                  <option key={seed.hash} value={seed.hash}>
+                  <option key={seed.walletIDHash} value={seed.walletIDHash}>
                     Seed Phrase #{index + 1} ({walletsForSeed.length} existing wallets)
                     {!seed.isBackedUp && ' - ⚠️ Not Backed Up'}
                   </option>
@@ -212,6 +213,7 @@ export default function DeriveWallet() {
                 onChange={(e) => setWalletName(e.target.value)}
                 placeholder="Enter wallet name"
                 disabled={isGenerating}
+                className="form-input"
                 required
               />
             </div>
@@ -254,7 +256,7 @@ export default function DeriveWallet() {
                 disabled={
                   isGenerating || 
                   !walletName.trim() || 
-                  !selectedSeedHash ||
+                  !selectedWalletIDHash ||
                   !validateDerivationPath(useCustomPath ? customPath : derivationPath) ||
                   usedPaths.includes(useCustomPath ? customPath : derivationPath)
                 }

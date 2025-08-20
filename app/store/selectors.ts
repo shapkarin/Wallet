@@ -24,19 +24,19 @@ export const selectWalletsBySeedPhrase = createSelector(
   (wallets, seedPhrases) => {
     return seedPhrases.map(seedPhrase => ({
       seedPhrase,
-      wallets: wallets.filter(wallet => wallet.seedPhraseHash === seedPhrase.hash),
+      wallets: wallets.filter(wallet => wallet.walletIDHash === seedPhrase.walletIDHash),
     }));
   }
 );
 
-export const selectWalletsGroupedBySeed = createSelector(
+export const selectWalletsGroupedByWalletIDHash = createSelector(
   [selectWallets],
   (wallets) => {
     const grouped = wallets.reduce((acc, wallet) => {
-      if (!acc[wallet.seedPhraseHash]) {
-        acc[wallet.seedPhraseHash] = [];
+      if (!acc[wallet.walletIDHash]) {
+        acc[wallet.walletIDHash] = [];
       }
-      acc[wallet.seedPhraseHash].push(wallet);
+      acc[wallet.walletIDHash].push(wallet);
       return acc;
     }, {} as Record<string, typeof wallets>);
     return grouped;
@@ -48,10 +48,17 @@ export const selectUnbackedUpSeedPhrases = createSelector(
   (seedPhrases) => seedPhrases.filter(sp => !sp.isBackedUp)
 );
 
+export const selectWalletIDByHash = createSelector(
+  [selectWallets],
+  (wallets) => (walletIDHash: string) => {
+    return wallets.find(w => w.walletIDHash === walletIDHash && w.isWalletID);
+  }
+);
+
 export const selectAvailableDerivationPaths = createSelector(
   [selectWallets],
-  (wallets) => (seedPhraseHash: string) => {
-    const walletsForSeed = wallets.filter(w => w.seedPhraseHash === seedPhraseHash);
+  (wallets) => (walletIDHash: string) => {
+    const walletsForSeed = wallets.filter(w => w.walletIDHash === walletIDHash);
     return walletsForSeed.map(w => w.derivationPath);
   }
 );

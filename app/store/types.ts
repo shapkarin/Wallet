@@ -3,14 +3,16 @@ export interface WalletData {
   name: string;
   address: string;
   derivationPath: string;
-  seedPhraseHash: string;
+  walletIDHash: string;
+  isWalletID: boolean;
   chainId: number;
   createdAt: number;
   isBackedUp: boolean;
 }
 
 export interface SeedPhraseData {
-  hash: string;
+  walletIDHash: string;
+  walletIDAddress: string;
   encryptedSeed: string;
   salt: string;
   iv: string;

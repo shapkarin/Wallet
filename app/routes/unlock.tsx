@@ -171,6 +171,7 @@ export default function Unlock() {
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
+                  className="form-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPress}

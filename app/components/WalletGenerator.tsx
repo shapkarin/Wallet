@@ -71,13 +71,23 @@ export default function WalletGenerator({ onWalletGenerated }: WalletGeneratorPr
         finalPassword = await passwordManager.requestPassword();
       }
       
-      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(mnemonic, finalPassword);
-      
+      // First create WalletID (the primary wallet)
+      const walletID = await generateWalletFromMnemonic(mnemonic, "m/44'/60'/0'/0/0");
+
+      // Save seed phrase with WalletID's address as identifier
+      const seedPhraseData = await storageService.saveEncryptedSeedPhrase(
+        mnemonic, 
+        finalPassword, 
+        walletID.address
+      );
+
+      // Create WalletID data (self-referencing)
       const walletData = createWalletData(
-        wallet,
-        seedPhraseData.hash,
+        walletID,
+        seedPhraseData.walletIDHash,
         walletName.trim(),
-        1
+        1,
+        true  // isWalletID = true
       );
 
       dispatch(addSeedPhrase(seedPhraseData));

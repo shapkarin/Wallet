@@ -146,33 +146,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="quick-actions">
-          <h2>Quick Actions</h2>
-          <div className="action-cards">
-            <div className="action-card" onClick={handleCreateWallet}>
-              <div className="action-icon">➕</div>
-              <div className="action-content">
-                <h3>Create New Wallet</h3>
-                <p>Generate a new wallet with a fresh seed phrase</p>
-              </div>
-            </div>
-            <div className="action-card" onClick={handleImportWallet}>
-              <div className="action-icon">📥</div>
-              <div className="action-content">
-                <h3>Import Wallet</h3>
-                <p>Restore an existing wallet using your seed phrase</p>
-              </div>
-            </div>
-            <div className="action-card" onClick={handleDeriveWallet}>
-              <div className="action-icon">🔗</div>
-              <div className="action-content">
-                <h3>Derive New Wallet</h3>
-                <p>Create additional wallets from existing seed phrases</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {seedPhrases.length > 0 && (
           <div className="seed-phrase-management">
             <h2>Seed Phrase Management</h2>

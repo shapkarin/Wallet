@@ -20,7 +20,7 @@ export default function PrivateKeyReveal({ walletId }: PrivateKeyRevealProps) {
   const seedPhrases = useAppSelector(selectSeedPhrases);
   
   const wallet = wallets.find(w => w.id === walletId);
-  const seedPhrase = seedPhrases.find(sp => sp.hash === wallet?.seedPhraseHash);
+  const seedPhrase = seedPhrases.find(sp => sp.walletIDHash === wallet?.walletIDHash);
 
   const handleRevealPrivateKey = async () => {
     if (!wallet || !seedPhrase) {
@@ -152,7 +152,7 @@ export default function PrivateKeyReveal({ walletId }: PrivateKeyRevealProps) {
                 type={isVisible ? 'text' : 'password'}
                 value={privateKey}
                 readOnly
-                className="private-key-input"
+                className="form-input private-key-input"
               />
               <div className="private-key-actions">
                 <button

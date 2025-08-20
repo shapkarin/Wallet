@@ -15,7 +15,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
   className = '',
   ...props
 }, ref) => {
-  const baseClasses = 'form-checkbox';
+  const baseClasses = 'form-input';
   const errorClasses = error ? 'error' : '';
   
   const checkboxClasses = [baseClasses, errorClasses, className]

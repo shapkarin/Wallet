@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { 
   selectWallets, 
-  selectWalletsGroupedBySeed, 
+  selectWalletsGroupedByWalletIDHash, 
   selectSeedPhrases,
   selectSelectedChainId,
-  selectUnbackedUpSeedPhrases
+  selectUnbackedUpSeedPhrases,
+  selectWalletIDByHash
 } from '../store/selectors';
 import { setSelectedWallet, removeWallet } from '../store/walletSlice';
 import { SUPPORTED_NETWORKS } from '../services/wallet';
@@ -21,7 +22,8 @@ export default function WalletList() {
   const navigate = useNavigate();
   
   const wallets = useAppSelector(selectWallets);
-  const groupedWallets = useAppSelector(selectWalletsGroupedBySeed);
+  const groupedWallets = useAppSelector(selectWalletsGroupedByWalletIDHash);
+  const getWalletIDInfo = useAppSelector(selectWalletIDByHash);
   const seedPhrases = useAppSelector(selectSeedPhrases);
   const selectedChainId = useAppSelector(selectSelectedChainId);
   const unbackedUpSeeds = useAppSelector(selectUnbackedUpSeedPhrases);
@@ -32,12 +34,12 @@ export default function WalletList() {
     setSelectedNetwork(selectedChainId);
   }, [selectedChainId]);
 
-  const toggleGroupExpansion = (seedHash: string) => {
+  const toggleGroupExpansion = (walletIDHash: string) => {
     const newExpanded = new Set(expandedGroups);
-    if (newExpanded.has(seedHash)) {
-      newExpanded.delete(seedHash);
+    if (newExpanded.has(walletIDHash)) {
+      newExpanded.delete(walletIDHash);
     } else {
-      newExpanded.add(seedHash);
+      newExpanded.add(walletIDHash);
     }
     setExpandedGroups(newExpanded);
   };
@@ -55,8 +57,8 @@ export default function WalletList() {
     navigate(`/wallet/${wallet.id}/mnemonic`);
   };
 
-  const handleDeriveWallet = (seedHash: string) => {
-    navigate(`/derive-wallet?seed=${seedHash}`);
+  const handleDeriveWallet = (walletIDHash: string) => {
+    navigate(`/derive-wallet?walletIDHash=${walletIDHash}`);
   };
 
   const handleDeleteWallet = (walletId: string) => {
@@ -69,8 +71,8 @@ export default function WalletList() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  const getSeedPhraseInfo = (seedHash: string) => {
-    return seedPhrases.find(sp => sp.hash === seedHash);
+  const getSeedPhraseInfo = (walletIDHash: string) => {
+    return seedPhrases.find(sp => sp.walletIDHash === walletIDHash);
   };
 
   if (wallets.length === 0) {
@@ -128,19 +130,23 @@ export default function WalletList() {
       )}
 
       <div className="wallet-list__groups">
-        {Object.entries(groupedWallets).map(([seedHash, walletsInGroup]) => {
-          const seedInfo = getSeedPhraseInfo(seedHash);
-          const isExpanded = expandedGroups.has(seedHash);
+        {Object.entries(groupedWallets).map(([walletIDHash, walletsInGroup]) => {
+          const seedInfo = getSeedPhraseInfo(walletIDHash);
+          const walletIDInfo = getWalletIDInfo(walletIDHash);
+          const isExpanded = expandedGroups.has(walletIDHash);
           
           return (
-            <div key={seedHash} className="wallet-group">
+            <div key={walletIDHash} className="wallet-group">
               <div 
                 className="wallet-group__header"
-                onClick={() => toggleGroupExpansion(seedHash)}
+                onClick={() => toggleGroupExpansion(walletIDHash)}
               >
                 <div className="wallet-group__info">
                   <h3>Seed Phrase ({walletsInGroup.length} wallets)</h3>
-                  <span className="seed-hash">{seedHash.slice(0, 8)}...{seedHash.slice(-8)}</span>
+                  <span className="walletID-hash">ID: {walletIDHash.slice(0, 8)}...{walletIDHash.slice(-8)}</span>
+                  {walletIDInfo && (
+                    <span className="walletID-name">Primary: {walletIDInfo.name}</span>
+                  )}
                   {seedInfo && !seedInfo.isBackedUp && (
                     <span className="backup-status backup-status--pending">Not Backed Up</span>
                   )}
@@ -149,7 +155,7 @@ export default function WalletList() {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeriveWallet(seedHash);
+                      handleDeriveWallet(walletIDHash);
                     }}
                     className="btn btn-secondary btn-sm"
                   >

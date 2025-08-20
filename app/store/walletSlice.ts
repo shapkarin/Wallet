@@ -25,15 +25,15 @@ const walletSlice = createSlice({
     addSeedPhrase: (state, action: PayloadAction<SeedPhraseData>) => {
       state.seedPhrases.push(action.payload);
     },
-    updateSeedPhraseBackupStatus: (state, action: PayloadAction<{ hash: string; isBackedUp: boolean }>) => {
-      const seedPhrase = state.seedPhrases.find(sp => sp.hash === action.payload.hash);
+    updateSeedPhraseBackupStatus: (state, action: PayloadAction<{ walletIDHash: string; isBackedUp: boolean }>) => {
+      const seedPhrase = state.seedPhrases.find(sp => sp.walletIDHash === action.payload.walletIDHash);
       if (seedPhrase) {
         seedPhrase.isBackedUp = action.payload.isBackedUp;
       }
     },
     addWallet: (state, action: PayloadAction<WalletData>) => {
       state.wallets.push(action.payload);
-      const seedPhrase = state.seedPhrases.find(sp => sp.hash === action.payload.seedPhraseHash);
+      const seedPhrase = state.seedPhrases.find(sp => sp.walletIDHash === action.payload.walletIDHash);
       if (seedPhrase && !seedPhrase.walletIds.includes(action.payload.id)) {
         seedPhrase.walletIds.push(action.payload.id);
       }
@@ -47,13 +47,32 @@ const walletSlice = createSlice({
     removeWallet: (state, action: PayloadAction<string>) => {
       const wallet = state.wallets.find(w => w.id === action.payload);
       if (wallet) {
-        state.wallets = state.wallets.filter(w => w.id !== action.payload);
-        const seedPhrase = state.seedPhrases.find(sp => sp.hash === wallet.seedPhraseHash);
-        if (seedPhrase) {
-          seedPhrase.walletIds = seedPhrase.walletIds.filter(id => id !== action.payload);
-        }
-        if (state.selectedWalletId === action.payload) {
-          state.selectedWalletId = null;
+        // Critical: Check if removing WalletID
+        if (wallet.isWalletID) {
+          // Removing WalletID removes entire seed phrase and all related wallets
+          const relatedWallets = state.wallets.filter(w => w.walletIDHash === wallet.walletIDHash);
+          
+          // Remove all wallets that share the same walletIDHash
+          const walletIdsToRemove = relatedWallets.map(w => w.id);
+          state.wallets = state.wallets.filter(w => !walletIdsToRemove.includes(w.id));
+          
+          // Remove the seed phrase
+          state.seedPhrases = state.seedPhrases.filter(sp => sp.walletIDHash !== wallet.walletIDHash);
+          
+          // Clear selected wallet if it was one of the removed wallets
+          if (walletIdsToRemove.includes(state.selectedWalletId || '')) {
+            state.selectedWalletId = null;
+          }
+        } else {
+          // Removing non-WalletID: just remove this wallet
+          state.wallets = state.wallets.filter(w => w.id !== action.payload);
+          const seedPhrase = state.seedPhrases.find(sp => sp.walletIDHash === wallet.walletIDHash);
+          if (seedPhrase) {
+            seedPhrase.walletIds = seedPhrase.walletIds.filter(id => id !== action.payload);
+          }
+          if (state.selectedWalletId === action.payload) {
+            state.selectedWalletId = null;
+          }
         }
       }
     },
