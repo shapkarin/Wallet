@@ -1,3 +1,36 @@
+# Run the project
+Install deps
+```sh
+# to intall deps with npm
+npm i 
+# to intall deps with yarn
+yarn
+```
+
+Run dev mode for webapp
+```sh
+npm run dev
+# or
+yarn dev
+```
+
+Rin dev mode for extension if needed
+```sh
+npm run dev:extension
+# or 
+yarn dev:extension
+```
+
+You can build it as a webapp or browser extension
+```sh
+npm run build:prod # web app
+npm run build:extension:prod # extension
+```
+
+Tests was not finished
+
+## Description 
+
 For bootstrap it uses `npx create-react-router@latest` from React Router which has references at React docs https://react.dev/learn/creating-a-react-app#react-router-v7 
 
 First I used Argon2 for seed encyption but next switched to PBKDF2 because it's a part of node.js crypto.
