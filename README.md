@@ -7,6 +7,8 @@ Password to encrypt the seed stored as hash.
 
 User are able to create new wallet with new seed phrase, and the wallet with the same seed but with other deriviation path.
 
+I use salt for each encryption to make it harder to use rainbow tables.
+
 App is client-side only.
 
 I tried to make app blockchain agnistic so it's easy to add other chains.
