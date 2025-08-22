@@ -52,7 +52,7 @@ export default function SeedPhraseSelector({
   };
 
   const getWalletCountForSeed = (seedHash: string) => {
-    return wallets.filter(w => w.seedPhraseHash === seedHash).length;
+    return wallets.filter(w => w.walletIDHash === seedHash).length;
   };
 
   if (seedPhrases.length === 0) {

@@ -4,7 +4,7 @@ import { selectWallets } from '../store/selectors';
 import type { WalletData } from '../store/types';
 
 interface DerivationPathHistoryProps {
-  seedPhraseHash: string;
+  currentWalletIDHash: string;
   onCreateWallet?: (suggestedPath: string) => void;
   onViewWallet?: (walletId: string) => void;
 }
@@ -19,14 +19,14 @@ interface PathInfo {
 }
 
 export default function DerivationPathHistory({
-  seedPhraseHash,
+  currentWalletIDHash,
   onCreateWallet,
   onViewWallet
 }: DerivationPathHistoryProps) {
   const allWallets = useAppSelector(selectWallets);
   
   const walletData = useMemo(() => {
-    const walletsForSeed = allWallets.filter(w => w.seedPhraseHash === seedPhraseHash);
+    const walletsForSeed = allWallets.filter(w => w.walletIDHash === currentWalletIDHash);
     
     const pathInfos: PathInfo[] = walletsForSeed.map(wallet => {
       const pathParts = wallet.derivationPath.split('/');
@@ -90,7 +90,7 @@ export default function DerivationPathHistory({
       usedAccounts: usedAccounts.length,
       gapCount: gaps.length
     };
-  }, [allWallets, seedPhraseHash]);
+  }, [allWallets, currentWalletIDHash]);
 
   const generateNextPath = (): string => {
     const maxAccount = Math.max(...Object.keys(walletData.groupedByAccount).map(Number), -1);

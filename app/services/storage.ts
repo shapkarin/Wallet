@@ -25,7 +25,6 @@ export interface SecureStorageService {
   resetApplication: () => void;
   exportData: (password: string) => Promise<string>;
   importData: (data: string, password: string) => Promise<void>;
-  migrateFromSeedHashToWalletIDHash: (password: string) => Promise<void>;
 }
 
 const STORAGE_KEYS = {
@@ -295,46 +294,6 @@ class LocalStorageService implements SecureStorageService {
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  async migrateFromSeedHashToWalletIDHash(password: string): Promise<void> {
-    const existingData = await this.loadStorageData(password);
-    
-    for (const seedPhrase of existingData.seedPhrases) {
-      if ((seedPhrase as any).hash && !seedPhrase.walletIDHash) {
-        // Find first wallet (WalletID) that uses this seed phrase
-        const walletID = existingData.wallets.find(w => 
-          (w as any).seedPhraseHash === (seedPhrase as any).hash && 
-          w.derivationPath === "m/44'/60'/0'/0/0"
-        );
-        
-        if (walletID) {
-          // Generate walletIDHash from walletID's address
-          seedPhrase.walletIDHash = await this.generateWalletIDHash(walletID.address);
-          seedPhrase.walletIDAddress = walletID.address;
-          delete (seedPhrase as any).hash;
-        }
-      }
-    }
-    
-    // Update all wallet references
-    for (const wallet of existingData.wallets) {
-      if ((wallet as any).seedPhraseHash && !wallet.walletIDHash) {
-        // Find the corresponding seed phrase to get walletIDHash
-        const seedPhrase = existingData.seedPhrases.find(sp => 
-          (sp as any).hash === (wallet as any).seedPhraseHash || sp.walletIDAddress
-        );
-        
-        if (seedPhrase && seedPhrase.walletIDHash) {
-          wallet.walletIDHash = seedPhrase.walletIDHash;
-          wallet.isWalletID = (wallet.derivationPath === "m/44'/60'/0'/0/0");
-          delete (wallet as any).seedPhraseHash;
-        }
-      }
-    }
-    
-    // Save migrated data
-    await this.saveStorageData(existingData, password);
   }
 }
 
