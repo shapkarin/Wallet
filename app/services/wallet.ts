@@ -183,7 +183,6 @@ export const createWalletData = (
     walletIDHash,
     isWalletID,
     chainId,
-    createdAt: Date.now(),
     isBackedUp: false,
   };
 };

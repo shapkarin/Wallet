@@ -165,9 +165,6 @@ export default function Dashboard() {
                     </div>
                     <div className="seed-phrase-meta">
                       <span className="wallet-count">{seedWallets.length} wallet{seedWallets.length !== 1 ? 's' : ''}</span>
-                      <span className="created-date">
-                        Created: {new Date(seedPhrase.createdAt).toLocaleDateString()}
-                      </span>
                     </div>
                   </div>
                   <div className="seed-phrase-actions">

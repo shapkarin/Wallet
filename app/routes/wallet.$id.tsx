@@ -182,12 +182,6 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
               <div className="wallet-info-card">
                 <h3>Wallet Information</h3>
                 <div className="info-item">
-                  <span className="info-label">Created:</span>
-                  <span className="info-value">
-                    {new Date(wallet.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="info-item">
                   <span className="info-label">Derivation Path:</span>
                   <span className="info-value">{wallet.derivationPath}</span>
                 </div>

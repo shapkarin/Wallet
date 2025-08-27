@@ -6,7 +6,6 @@ export interface WalletData {
   walletIDHash: string;
   isWalletID: boolean;
   chainId: number;
-  createdAt: number;
   isBackedUp: boolean;
 }
 
@@ -18,7 +17,6 @@ export interface SeedPhraseData {
   iv: string;
   authTag: string;
   isBackedUp: boolean;
-  createdAt: number;
   walletIds: string[];
 }
 

@@ -58,7 +58,6 @@ class LocalStorageService implements SecureStorageService {
     const authData = {
       hash,
       salt,
-      createdAt: Date.now(),
     };
 
     localStorage.setItem(STORAGE_KEYS.PASSWORD_HASH, JSON.stringify(authData));
@@ -148,7 +147,6 @@ class LocalStorageService implements SecureStorageService {
       iv: encrypted.iv,
       authTag: encrypted.authTag,
       isBackedUp: false,
-      createdAt: Date.now(),
       walletIds: [],
     };
 
