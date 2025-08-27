@@ -23,7 +23,7 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
     const foundWallet = wallets.find(w => w.id === params.id);
     if (foundWallet) {
       setWallet(foundWallet);
-      const foundSeed = seedPhrases.find(sp => sp.hash === foundWallet.seedPhraseHash);
+      const foundSeed = seedPhrases.find(sp => sp.walletIDHash === foundWallet.walletIDHash);
       setSeedPhrase(foundSeed);
     } else {
       navigate('/dashboard');
@@ -49,7 +49,7 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
   };
 
   const handleDeriveWallet = () => {
-    navigate(`/derive-wallet?seed=${wallet?.seedPhraseHash}`);
+    navigate(`/derive-wallet?seed=${wallet?.walletIDHash}`);
   };
 
   const generateQRCode = (address: string) => {
@@ -167,9 +167,9 @@ export default function WalletDetails({ params }: Route.ComponentProps) {
               <div className="derivation-history-section">
                 <h2>Derivation Path History</h2>
                 <DerivationPathHistory
-                  seedPhraseHash={wallet.seedPhraseHash}
+                  currentWalletIDHash={wallet.walletIDHash}
                   onCreateWallet={(suggestedPath) => {
-                    navigate(`/derive-wallet?seed=${wallet.seedPhraseHash}&path=${encodeURIComponent(suggestedPath)}`);
+                    navigate(`/derive-wallet?seed=${wallet.walletIDHash}&path=${encodeURIComponent(suggestedPath)}`);
                   }}
                   onViewWallet={(walletId) => {
                     navigate(`/wallet/${walletId}`);
