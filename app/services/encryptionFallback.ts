@@ -16,8 +16,8 @@ export const generateSalt = (): string => {
   }
   
   const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  const randomValues = crypto.getRandomValues(array);
+  return Array.from(randomValues, byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
 export const generateIV = (): string => {
@@ -26,8 +26,8 @@ export const generateIV = (): string => {
   }
   
   const array = new Uint8Array(12);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  const randomValues = crypto.getRandomValues(array);
+  return Array.from(randomValues, byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
 const deriveKeyFromPassword = async (password: string, salt: string, extractable: boolean = false): Promise<CryptoKey> => {
