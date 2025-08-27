@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectPasswordPrompt } from '../store/selectors';
-import { resolvePasswordPrompt, rejectPasswordPrompt } from '../store/authSlice';
+import { resolvePasswordPrompt, rejectPasswordPrompt, unlock } from '../store/authSlice';
 import { passwordManager } from '../services/passwordManager';
 
 export default function PasswordPrompt() {
@@ -34,6 +34,7 @@ export default function PasswordPrompt() {
     try {
       const isValid = await passwordManager.validateAndSetPassword(password);
       if (isValid) {
+        dispatch(unlock());
         dispatch(resolvePasswordPrompt(password));
       } else {
         setError('Invalid password. Please try again.');
